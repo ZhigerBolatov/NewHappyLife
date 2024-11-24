@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Happy Lifes</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet"> 
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body onload="preload()">
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 wow fadeIn" data-wow-delay="0.1s">
+        <a href="index.html" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+            <h1 class="m-0 text-primary"><i class="far fa-hospital me-3"></i>HappyLifes</h1>
+        </a>
+        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto p-4 p-lg-0">
+                <a href="index.html" class="nav-item nav-link">Home</a>
+                <a href="about.html" class="nav-item nav-link">About</a>
+                <a href="service.html" class="nav-item nav-link">Service</a>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
+                    <div class="dropdown-menu rounded-0 rounded-bottom m-0">
+                        <a href="feature.html" class="dropdown-item">Feature</a>
+                        <a href="team.html" class="dropdown-item active">Our Doctor</a>
+                        <a href="appointment.html" class="dropdown-item">Appointment</a>
+                        <a href="testimonial.html" class="dropdown-item">Testimonial</a>
+                        <a href="404.html" class="dropdown-item">404 Page</a>
+                    </div>
+                </div>
+                <a href="contact.html" class="nav-item nav-link">Contact</a>
+            </div>
+            <a href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Appointment<i class="fa fa-arrow-right ms-3"></i></a>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+
+    <!-- Page Header Start -->
+    <div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <h1 class="display-3 text-white mb-3 animated slideInDown">Doctors</h1>
+            <nav aria-label="breadcrumb animated slideInDown">
+                <ol class="breadcrumb text-uppercase mb-0">
+                    <li class="breadcrumb-item"><a class="text-white" href="index.html">Home</a></li>
+                    <li class="breadcrumb-item text-primary active" aria-current="page">Doctors</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <!-- Page Header End -->
+
+
+    <!-- Team Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+                <p class="d-inline-block border rounded-pill py-1 px-4">Doctors</p>
+                <h1>Our Experience Doctors</h1>
+            </div>
+                <div class="bg-light rounded h-100 d-flex align-items-center p-5 row g-3" data-wow-delay="0.1s">
+                    <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                        <select class="form-select border-0" id="category_select">
+                            <option selected value="">No Category</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                        <div class="team-item position-relative rounded overflow-hidden">
+                            <input id="doctor_name_input" type="text" class="form-control border-0" placeholder="Doctor`s Name or Surname">
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
+                        <button class="btn btn-primary" style="width: 100%" onclick="search()">Search</button>
+                    </div>
+                    <div class="col-lg-2 col-md-6 wow fadeInUp" data-wow-delay="0.3s" align="left">
+                        <button class="btn btn-link" onclick="clear_filters()">Clear All Filters</button>
+                    </div>
+                </div>
+
+            <div class="row g-4" id="doctors_container">
+
+            </div>
+        </div>
+    </div>
+    <!-- Team End -->
+        
+
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-light mb-4">Address</h5>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Manassa 34/1, Almaty, Kazakhstan</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+7 (727) 222 1111</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-outline-light btn-social rounded-circle" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social rounded-circle" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-light btn-social rounded-circle" href=""><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-outline-light btn-social rounded-circle" href=""><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" id="category_footer_container">
+                    <h5 class="text-light mb-4">Services</h5>
+
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-light mb-4">Quick Links</h5>
+                    <a class="btn btn-link" href="">About Us</a>
+                    <a class="btn btn-link" href="">Contact Us</a>
+                    <a class="btn btn-link" href="">Our Services</a>
+                    <a class="btn btn-link" href="">Terms & Condition</a>
+                    <a class="btn btn-link" href="">Support</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-light mb-4">Newsletter</h5>
+                    <p>Don’t miss out on the latest in healthcare news, expert advice, and exclusive offers!</p>
+                    <div class="position-relative mx-auto" style="max-width: 400px;">
+                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
+                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="copyright">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; <a class="border-bottom" href="#">HappyLifes</a>, All Right Reserved.
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+                        Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        async function preload() {
+            const categories_response = await fetchData('categories', 'GET', null);
+            if (categories_response.status == 200) {
+                const category_footer_container = document.getElementById('category_footer_container');
+                const category_select = document.getElementById('category_select');
+                let counter = 0;
+                for (let category of categories_response.data) {
+                    let option = document.createElement('option');
+                    option.value = category.id;
+                    option.innerHTML = category.name;
+                    category_select.appendChild(option);
+
+                    if (counter < 5) {
+                        category_footer_container.innerHTML += `<a class="btn btn-link" href="doctors.html?category=${category.id}">${category.name}</a>`;
+                    }
+                    counter += 1;
+                }
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category');
+            if (category !== null) {
+                for (let i = 0; i < category_select.options.length; i++) {
+                    if (category_select.options[i].value === category) {
+                        category_select.options[0].selected = false;
+                        category_select.options[i].selected = true;
+                        search();
+                        break;
+                    }
+                }
+            } else {
+                const doctors_response = await fetchData('doctors', 'GET', null);
+                if (doctors_response.status == 200) {
+                    const doctors_container = document.getElementById('doctors_container');
+                    for (let doctor of doctors_response.data) {
+                        let outer_container = document.createElement('div');
+                        outer_container.classList.add('col-lg-3', 'col-md-6', 'wow', 'fadeInUp');
+                        outer_container.setAttribute('data-wow-delay', '0.2s');
+
+                        let inner_container = document.createElement('div');
+                        inner_container.classList.add('position-relative', 'rounded', 'overflow-hidden');
+
+                        let image_container = document.createElement('div');
+                        image_container.classList.add('overflow-hidden');
+                        image_container.innerHTML = `<img class="img-fluid" src="${doctor.photo}" alt="">`;
+
+                        let info_container = document.createElement('div');
+                        info_container.classList.add('team-text', 'bg-light', 'text-center', 'p-4');
+
+                        info_container.innerHTML += `<h5>${doctor.name} ${doctor.surname}</h5>`;
+                        info_container.innerHTML += `<p class="text-primary">${doctor.category}</p>`;
+
+                        inner_container.appendChild(image_container);
+                        inner_container.appendChild(info_container);
+                        outer_container.appendChild(inner_container);
+                        doctors_container.appendChild(outer_container);
+                    }
+                }
+            }
+        }
+
+        async function search() {
+            const doctors_container = document.getElementById('doctors_container');
+            const name = document.getElementById('doctor_name_input').value;
+            const category = document.getElementById('category_select').value;
+
+            let url = 'doctors_search';
+            if (name && category) {
+                url += `?name=${name}&category=${category}`;
+            } else if (name) {
+                url += `?name=${name}`;
+            } else if (category) {
+                url += `?category=${category}`;
+            }
+
+            const doctors_response = await fetchData(url, 'GET', null);
+            if (doctors_response.status == 200) {
+                doctors_container.innerHTML = '';
+                for (let doctor of doctors_response.data) {
+                    let outer_container = document.createElement('div');
+                    outer_container.classList.add('col-lg-3', 'col-md-6', 'wow', 'fadeInUp');
+                    outer_container.setAttribute('data-wow-delay', '0.2s');
+
+                    let inner_container = document.createElement('div');
+                    inner_container.classList.add('position-relative', 'rounded', 'overflow-hidden');
+
+                    let image_container = document.createElement('div');
+                    image_container.classList.add('overflow-hidden');
+                    image_container.innerHTML = `<img class="img-fluid" src="${doctor.photo}" alt="">`;
+
+                    let info_container = document.createElement('div');
+                    info_container.classList.add('team-text', 'bg-light', 'text-center', 'p-4');
+
+                    info_container.innerHTML += `<h5>${doctor.name} ${doctor.surname}</h5>`;
+                    info_container.innerHTML += `<p class="text-primary">${doctor.category}</p>`;
+
+                    inner_container.appendChild(image_container);
+                    inner_container.appendChild(info_container);
+                    outer_container.appendChild(inner_container);
+                    doctors_container.appendChild(outer_container);
+                }
+            }
+        }
+
+        function clear_filters() {
+            document.getElementById('doctor_name_input').value = '';
+            document.getElementById('category_select').value = '';
+            search();
+        }
+    </script>
+</body>
+
+</html>
