@@ -55,16 +55,7 @@
                 <a href="index.html" class="nav-item nav-link">Home</a>
                 <a href="about.html" class="nav-item nav-link active">About</a>
                 <a href="service.html" class="nav-item nav-link">Service</a>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                    <div class="dropdown-menu rounded-0 rounded-bottom m-0">
-                        <a href="feature.html" class="dropdown-item">Feature</a>
-                        <a href="team.html" class="dropdown-item">Our Doctor</a>
-                        <a href="appointment.html" class="dropdown-item">Appointment</a>
-                        <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                        <a href="404.html" class="dropdown-item">404 Page</a>
-                    </div>
-                </div>
+                
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
             </div>
             <a href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Appointment<i class="fa fa-arrow-right ms-3"></i></a>
@@ -228,8 +219,9 @@
                     <h5 class="text-light mb-4">Newsletter</h5>
                     <p>Don’t miss out on the latest in healthcare news, expert advice, and exclusive offers!</p>
                     <div class="position-relative mx-auto" style="max-width: 400px;">
-                        <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                        <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">SignUp</button>
+                        <input id="newsletter_email_input" class="form-control w-100 py-3 ps-4 pe-5" type="email" placeholder="Your email">
+                        <button id="newsletter_follow_button" type="button" onclick="follow_newsletter()" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2" disabled>SignUp</button>
+                        <p id="newsletter_error_text" style="color: red;"></p>
                     </div>
                 </div>
             </div>
@@ -318,6 +310,7 @@
                     counter += 1;
                 }
             }
+            newsletter_init();
         }
     </script>
 </body>

@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
-from .serializers import UserSerializer, CategorySerializer
+from .serializers import *
 from .models import *
 from .tasks import *
 from .permissions import *
@@ -23,7 +23,7 @@ class AuthAPIView(APIView):
         if user is None:
             return Response(data={'success': False}, status=status.HTTP_400_BAD_REQUEST)
         login(request, user)
-        return Response(data={'success': True, 'role': user.role.name}, status=status.HTTP_200_OK)
+        return Response(data={'success': True, 'role': user.role}, status=status.HTTP_200_OK)
 
 
 class LogOutAPIView(APIView):
@@ -92,3 +92,39 @@ class DoctorSearchApiView(APIView):
             doctors = User.objects.all()
         data = UserSerializer(instance=doctors, many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class DoctorDetailApiView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, doctor_id):
+        doctor = get_object_or_404(User, id=doctor_id)
+        data = UserSerializer(instance=doctor).data
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class DoctorScheduleApiView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, doctor_id):
+        doctor = get_object_or_404(User, id=doctor_id)
+        data = ScheduleSerializer(instance=doctor.schedule).data
+        bookings = Booking.objects.filter(doctor=doctor)
+        data.update({'bookings': BookingSerializer(instance=bookings, many=True).data})
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class NewslettersApiView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get('email')
+        try:
+            NewsletterFollower.objects.get(email=email)
+        except NewsletterFollower.DoesNotExist:
+            newsletter_follower = NewsletterFollower(email=email)
+            newsletter_follower.save()
+            return Response(data={'success': True}, status=status.HTTP_200_OK)
+        else:
+            return Response(data={'success': False, 'detail': 'Email already following!'},
+                            status=status.HTTP_400_BAD_REQUEST)

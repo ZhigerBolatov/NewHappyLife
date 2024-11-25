@@ -42,7 +42,7 @@
     <!-- Spinner End -->
 
     <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 wow fadeIn" data-wow-delay="0.1s">
+    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 wow fadeIn" data-wow-delay="0.5s">
         <a href="index.html" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
             <h1 class="m-0 text-primary"><i class="far fa-hospital me-3"></i>HappyLifes</h1>
         </a>
@@ -73,13 +73,14 @@
 
 
     <!-- Page Header Start -->
-    <div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.5s">
         <div class="container py-5">
             <h1 class="display-3 text-white mb-3 animated slideInDown">Doctors</h1>
             <nav aria-label="breadcrumb animated slideInDown">
                 <ol class="breadcrumb text-uppercase mb-0">
                     <li class="breadcrumb-item"><a class="text-white" href="index.html">Home</a></li>
-                    <li class="breadcrumb-item text-primary active" aria-current="page">Doctors</li>
+                    <li class="breadcrumb-item"><a class="text-white" href="doctors.html">Doctors</a></li>
+                    <li id="doctors_breadcrumb" class="breadcrumb-item text-primary active" aria-current="page"></li>
                 </ol>
             </nav>
         </div>
@@ -87,42 +88,43 @@
     <!-- Page Header End -->
 
 
-    <!-- Team Start -->
     <div class="container-xxl py-5">
         <div class="container">
-            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                <p class="d-inline-block border rounded-pill py-1 px-4">Doctors</p>
-                <h1>Our Experience Doctors</h1>
-            </div>
-            <div class="bg-light rounded h-100 d-flex align-items-center p-5 row g-3" data-wow-delay="0.1s">
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <select class="form-select border-0" id="category_select">
-                        <option selected value="">No Category</option>
-                    </select>
-                </div>
-                <div class="col-lg-6 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="team-item position-relative rounded overflow-hidden">
-                        <input id="doctor_name_input" type="text" class="form-control border-0" placeholder="Doctor`s Name or Surname">
+            <div class="row g-5">
+                <div class="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
+                    <div class="d-flex flex-column">
+                        <img id="doctors_photo" class="img-fluid rounded w-75 align-self-end" src="" alt="">
                     </div>
                 </div>
-                <div class="col-lg-2 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <button class="btn btn-primary" style="width: 100%" onclick="search()">Search</button>
+                <div class="col-lg-6 wow fadeIn" data-wow-delay="">
+                    <h1 id="doctors_name" class="mb-4"></h1>
+                    <p id="doctors_category" class="d-inline-block border rounded-pill py-1 px-4"></p>
+                    <p id="doctors_bio" align="justify"></p>
                 </div>
-                <div class="col-lg-2 col-md-6 wow fadeInUp" data-wow-delay="0.3s" align="left">
-                    <button class="btn btn-link" onclick="clear_filters()">Clear All Filters</button>
-                </div>
-            </div>
-
-            <div class="row g-4" id="doctors_container">
-
             </div>
         </div>
     </div>
-    <!-- Team End -->
+
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-2 wow fadeIn" data-wow-delay="0.5s">
+                </div>
+                <div class="col-lg-10 wow fadeIn table-container" data-wow-delay="0.5s">
+                    <table class="table table-borderless" id="doctors_schedule_table">
+                        <thead>
+                            <tr></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
         
 
     <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-light footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.1s">
+    <div class="container-fluid bg-dark text-light footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.5s">
         <div class="container py-5">
             <div class="row g-5">
                 <div class="col-lg-3 col-md-6">
@@ -198,117 +200,105 @@
     <script src="js/script.js"></script>
     <script>
         async function preload() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const doctor = urlParams.get('doctor');
+            if (doctor === null) {
+                window.location.href = 'doctors.html';
+            }
+            let url = `doctors_detail/${doctor}`;
+            const doctors_response = await fetchData(url, 'GET', null);
+            if (doctors_response.status == 200) {
+                const data = doctors_response.data;
+                document.getElementById('doctors_photo').src = data.photo;
+                document.getElementById('doctors_name').innerHTML = `${data.name} ${data.surname}`;
+                document.getElementById('doctors_breadcrumb').innerHTML = `${data.name} ${data.surname}`;
+                document.getElementById('doctors_category').innerHTML = `${data.category}`;
+                document.getElementById('doctors_bio').innerHTML = `${data.bio}`;
+            }
+
+            url = `doctors_schedule/${doctor}`;
+            const doctors_schedule_response = await fetchData(url, 'GET', null);
+            if (doctors_schedule_response.status == 200) {
+                const data = doctors_schedule_response.data;
+                const doctors_schedule_table = document.getElementById('doctors_schedule_table');
+                const thead = document.querySelector('#doctors_schedule_table thead tr');
+                const full_month = getFullMonth();
+                for (let item of full_month) {
+                    let th = document.createElement('th');
+                    th.scope = 'col';
+                    th.innerHTML = `${item.weekday}<br>${item.date}.${item.month}`;
+                    th.dataset.weekday = item.weekday;
+                    th.dataset.date = item.date;
+                    th.dataset.month = item.month;
+                    th.dataset.year = item.year;
+                    thead.appendChild(th);
+                }
+
+                let calendar = [];
+                let max_length = 0;
+                for (let item of data.time_slots) {
+                    let time_slots = getTimeSlots(item.starts_at, item.ends_at);
+                    if (max_length < time_slots.length) {
+                        max_length = time_slots.length;
+                    }
+
+                    let time_slot_obj = {
+                        weekday: item.week_day,
+                        time_slots: time_slots
+                    };
+                    calendar.push(time_slot_obj);
+                }
+
+                const tbody = document.querySelector('#doctors_schedule_table tbody');
+                const today = new Date();
+                for (let i = 0; i < max_length; i++) {
+                    let tr = document.createElement('tr');
+                    for (let j = 0; j < thead.childNodes.length; j++) {
+                        let td = document.createElement('td');
+                        let current_time_slot = null;
+                        for (let item of calendar) {
+                            if (item.weekday == thead.childNodes[j].dataset.weekday) {
+                                current_time_slot = item;
+                                break;
+                            }
+                        }
+                        if (current_time_slot !== null) {
+                            let button = document.createElement('button');
+                            button.innerHTML = current_time_slot.time_slots[i];
+                            button.classList.add('btn', 'btn-primary');
+                            if (today.getDate() == thead.childNodes[j].dataset.date && today.getMonth() + 1 == thead.childNodes[j].dataset.month) {
+                                if (isTimePassed(current_time_slot.time_slots[i])) {
+                                    button.disabled = 'disabled';
+                                }
+                            }
+                            let date = `${thead.childNodes[j].dataset.year}-${thead.childNodes[j].dataset.month}-${thead.childNodes[j].dataset.date}T${current_time_slot.time_slots[i]}:00`;
+                            if (isTimeBooked(data.bookings, new Date(date))) {
+                                button.disabled = 'disabled';
+                                button.classList.remove('btn-primary');
+                                button.classList.add('btn-danger');
+                            }
+                            td.appendChild(button);
+                        }
+                        tr.appendChild(td);
+                    }
+                    tbody.appendChild(tr);
+                }
+            }
+
             const categories_response = await fetchData('categories', 'GET', null);
             if (categories_response.status == 200) {
                 const category_footer_container = document.getElementById('category_footer_container');
-                const category_select = document.getElementById('category_select');
                 let counter = 0;
                 for (let category of categories_response.data) {
-                    let option = document.createElement('option');
-                    option.value = category.id;
-                    option.innerHTML = category.name;
-                    category_select.appendChild(option);
-
-                    if (counter < 5) {
-                        category_footer_container.innerHTML += `<a class="btn btn-link" href="doctors.html?category=${category.id}">${category.name}</a>`;
+                    if (counter > 5) {
+                        break;
                     }
+                    category_footer_container.innerHTML += `<a class="btn btn-link" href="doctors.html?category=${category.id}">${category.name}</a>`;
                     counter += 1;
                 }
             }
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const category = urlParams.get('category');
-            if (category !== null) {
-                for (let i = 0; i < category_select.options.length; i++) {
-                    if (category_select.options[i].value === category) {
-                        category_select.options[0].selected = false;
-                        category_select.options[i].selected = true;
-                        search();
-                        break;
-                    }
-                }
-            } else {
-                const doctors_response = await fetchData('doctors', 'GET', null);
-                if (doctors_response.status == 200) {
-                    const doctors_container = document.getElementById('doctors_container');
-                    for (let doctor of doctors_response.data) {
-                        let outer_container = document.createElement('div');
-                        outer_container.classList.add('col-lg-3', 'col-md-6', 'wow', 'fadeInUp');
-                        outer_container.setAttribute('data-wow-delay', '0.2s');
-
-                        let inner_container = document.createElement('div');
-                        inner_container.classList.add('position-relative', 'rounded', 'overflow-hidden');
-
-                        let image_container = document.createElement('div');
-                        image_container.classList.add('overflow-hidden');
-                        image_container.innerHTML = `<img class="img-fluid" src="${doctor.photo}" alt="">`;
-
-                        let info_container = document.createElement('div');
-                        info_container.classList.add('team-text', 'bg-light', 'text-center', 'p-4');
-
-                        info_container.innerHTML += `<h5>${doctor.name} ${doctor.surname}</h5>`;
-                        info_container.innerHTML += `<p class="text-primary">${doctor.category}</p>`;
-                        info_container.innerHTML += `<a class="btn" href="doctors_detail.html?doctor=${doctor.id}">Read More</a>`;
-
-                        inner_container.appendChild(image_container);
-                        inner_container.appendChild(info_container);
-                        outer_container.appendChild(inner_container);
-                        doctors_container.appendChild(outer_container);
-                    }
-                }
-            }
-
             newsletter_init();
-        }
-
-        async function search() {
-            const doctors_container = document.getElementById('doctors_container');
-            const name = document.getElementById('doctor_name_input').value;
-            const category = document.getElementById('category_select').value;
-
-            let url = 'doctors_search';
-            if (name && category) {
-                url += `?name=${name}&category=${category}`;
-            } else if (name) {
-                url += `?name=${name}`;
-            } else if (category) {
-                url += `?category=${category}`;
-            }
-
-            const doctors_response = await fetchData(url, 'GET', null);
-            if (doctors_response.status == 200) {
-                doctors_container.innerHTML = '';
-                for (let doctor of doctors_response.data) {
-                    let outer_container = document.createElement('div');
-                    outer_container.classList.add('col-lg-3', 'col-md-6', 'wow', 'fadeInUp');
-                    outer_container.setAttribute('data-wow-delay', '0.2s');
-
-                    let inner_container = document.createElement('div');
-                    inner_container.classList.add('position-relative', 'rounded', 'overflow-hidden');
-
-                    let image_container = document.createElement('div');
-                    image_container.classList.add('overflow-hidden');
-                    image_container.innerHTML = `<img class="img-fluid" src="${doctor.photo}" alt="">`;
-
-                    let info_container = document.createElement('div');
-                    info_container.classList.add('team-text', 'bg-light', 'text-center', 'p-4');
-
-                    info_container.innerHTML += `<h5>${doctor.name} ${doctor.surname}</h5>`;
-                    info_container.innerHTML += `<p class="text-primary">${doctor.category}</p>`;
-                    info_container.innerHTML += `<a class="btn" href="doctors_detail.html?doctor=${doctor.id}">Read More</a>`;
-
-                    inner_container.appendChild(image_container);
-                    inner_container.appendChild(info_container);
-                    outer_container.appendChild(inner_container);
-                    doctors_container.appendChild(outer_container);
-                }
-            }
-        }
-
-        function clear_filters() {
-            document.getElementById('doctor_name_input').value = '';
-            document.getElementById('category_select').value = '';
-            search();
         }
     </script>
 </body>

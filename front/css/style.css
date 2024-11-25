@@ -517,3 +517,42 @@
 .footer .copyright a:hover {
     color: var(--primary);
 }
+
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-container::-webkit-scrollbar {
+    height: 8px;
+    position: absolute;
+    top: 0;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+#doctors_schedule_table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#doctors_schedule_table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#doctors_schedule_table th {
+    min-width: 75px;
+    text-align: center;
+}
+
+#doctors_schedule_table td {
+    text-align: center;
+}

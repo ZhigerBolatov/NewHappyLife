@@ -16,13 +16,13 @@ STATUS_CHOICES = {
 }
 
 WEEK_DAY_CHOICES = {
-    'MN': 'Monday',
-    'TU': 'Tuesday',
-    'WE': 'Wednesday',
-    'TH': 'Thursday',
-    'FR': 'Friday',
-    'SA': 'Saturday',
-    'SU': 'Sunday',
+    'Mon': 'Monday',
+    'Tue': 'Tuesday',
+    'Wed': 'Wednesday',
+    'Thu': 'Thursday',
+    'Fri': 'Friday',
+    'Sat': 'Saturday',
+    'Sun': 'Sunday',
 }
 
 
@@ -30,6 +30,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     iin = models.CharField(max_length=12, unique=True)
     name = models.CharField(max_length=255)
     surname = models.CharField(max_length=255)
+    bio = models.TextField(null=True, blank=True)
     photo = models.ImageField(upload_to='users')
     telephone = models.CharField(max_length=20, unique=True)
     email = models.CharField(max_length=255, unique=True)
@@ -116,3 +117,14 @@ class Booking(models.Model):
 
     def __str__(self):
         return f'{self.patient} - {self.datetime}'
+
+
+class NewsletterFollower(models.Model):
+    email = models.EmailField(unique=True)
+
+    class Meta:
+        verbose_name = "newsletter follower"
+        verbose_name_plural = "newsletter followers"
+
+    def __str__(self):
+        return self.email
