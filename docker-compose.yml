@@ -1,0 +1,64 @@
+version: "3.9"
+services:
+  postgres:
+    image: "postgres:14"
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_PASSWORD: "happy222"
+      POSTGRES_DB: "happylife_db"
+    expose:
+      - 5432
+
+  web:
+    build: .
+    expose:
+      - 8000
+    command: >
+      bash -c "python manage.py makemigrations --noinput && python manage.py migrate --noinput &&
+              gunicorn core.wsgi:application --bind 0.0.0.0:8000 --workers 1 --threads 4"
+    volumes:
+      - .:/code
+      - static_volume:/code/staticfiles
+      - media_volume:/code/media
+    depends_on:
+      - postgres
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 80:80
+      - 443:443
+      - 8000:8000
+    volumes:
+      - .:/code
+      - static_volume:/code/staticfiles
+      - media_volume:/code/media
+      - /home/zhiger_ali/HappyLife/front/html:/home/zhiger_ali/HappyLife/front/html
+      - /etc/letsencrypt/live/happylifes.org/fullchain.pem:/etc/letsencrypt/live/happylifes.org/fullchain.pem
+      - /etc/letsencrypt/live/happylifes.org/privkey.pem:/etc/letsencrypt/live/happylifes.org/privkey.pem
+#      - /etc/letsencrypt/live/dana-edu.kz-0001/chain.pem:/etc/letsencrypt/live/dana-edu.kz-0001/chain.pem
+    depends_on:
+      - web
+
+  redis:
+    image: redis:alpine
+
+  celery:
+    restart: always
+    build:
+      context: .
+    command: "celery -A core worker -l info"
+    volumes:
+      - .:/code
+      - static_volume:/code/staticfiles
+      - media_volume:/code/media
+    depends_on:
+      - redis
+      - web
+
+volumes:
+  static_volume:
+  media_volume:
+  postgres_data:

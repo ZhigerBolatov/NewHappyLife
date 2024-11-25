@@ -44,7 +44,7 @@ function getFullMonth() {
         start.setDate(start.getDate() + 1);
 
         const dayObj = {
-            date: next.getDate(),
+            date: String(next.getDate()).padStart(2, '0'),
             month: next.getMonth() + 1,
             year: next.getFullYear(),
             weekday: next.toLocaleString('en-US', { weekday: 'short' })
@@ -83,7 +83,7 @@ function isTimePassed(timeStr) {
 function isTimeBooked(bookings, date) {
     for (let booking of bookings) {
         let datetime = booking.datetime;
-        let time = `${date.getHours()}:${date.getMinutes()}`;
+        let time = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
         if (datetime.date == date.getDate() && datetime.month == date.getMonth() + 1 && datetime.time == time) {
             return true
         }
@@ -133,4 +133,33 @@ function newsletter_init() {
             newsletter_follow_button.disabled = '';
         }
     });
+}
+
+function validate_email(email){
+    var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+    return reg.test(email);
+}
+
+async function load_auth_route() {
+    let is_authenticated = false;
+    const is_authenticated_response = await fetchData('auth', 'GET', null);
+    if (is_authenticated_response.status == 200) {
+        is_authenticated = is_authenticated_response.data.is_authenticated;
+    }
+    const user_link = document.getElementById('user_link');
+    if (is_authenticated) {
+        user_link.href = '';
+        user_link.innerHTML = 'Log Out<i class="fa fa-arrow-up ms-3"></i>';
+        user_link.onclick = logout;
+    } else {
+        user_link.href = 'login.html';
+        user_link.innerHTML = 'Log In<i class="fa fa-arrow-down ms-3"></i>';
+    }
+}
+
+async function logout() {
+    const log_out_response = await fetchData('log_out', 'POST', null);
+    if (log_out_response.status == 200) {
+        window.reload();
+    }
 }

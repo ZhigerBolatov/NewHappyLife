@@ -1,6 +1,7 @@
 from django.contrib.auth import login, authenticate, logout
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
+from django.db import IntegrityError
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -15,6 +16,11 @@ from .permissions import *
 
 class AuthAPIView(APIView):
     permission_classes = [AllowAny]
+
+    def get(self, request):
+        if request.user and request.user.is_authenticated:
+            return Response(data={'is_authenticated': True, 'role': request.user.role}, status=status.HTTP_200_OK)
+        return Response(data={'is_authenticated': False, 'role': None}, status=status.HTTP_200_OK)
 
     def post(self, request):
         iin = request.data.get('iin')
@@ -32,6 +38,31 @@ class LogOutAPIView(APIView):
     def post(self, request):
         logout(request)
         return Response(data={'success': True}, status=status.HTTP_200_OK)
+
+
+class RegistrationApiView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        check_email = User.objects.filter(email=request.data['email'])
+        if len(check_email) > 0:
+            return Response(data={'success': False, 'field': 'email'}, status=status.HTTP_400_BAD_REQUEST)
+
+        check_telephone = User.objects.filter(telephone=request.data['telephone'])
+        if len(check_telephone) > 0:
+            return Response(data={'success': False, 'field': 'telephone'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.create_user(iin=request.data['iin'], password=request.data['password'])
+        except IntegrityError:
+            return Response(data={'success': False, 'field': 'iin'}, status=status.HTTP_400_BAD_REQUEST)
+
+        request.data['role'] = 'PT'
+        user = UserSerializer(instance=user, data=request.data, partial=True)
+        if user.is_valid():
+            user.save()
+            return Response(data={'success': True}, status=status.HTTP_200_OK)
+        return Response(data={'success': False, 'detail': user.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserAPIView(APIView):
@@ -128,3 +159,15 @@ class NewslettersApiView(APIView):
         else:
             return Response(data={'success': False, 'detail': 'Email already following!'},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+class BookingApiView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        request.data['patient'] = request.user.id
+        booking = BookingSerializer(data=request.data)
+        if booking.is_valid():
+            booking.save()
+            return Response(data={'success': True}, status=status.HTTP_200_OK)
+        return Response(data={'success': False, 'detail': booking.errors}, status=status.HTTP_400_BAD_REQUEST)

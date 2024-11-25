@@ -31,10 +31,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     surname = models.CharField(max_length=255)
     bio = models.TextField(null=True, blank=True)
-    photo = models.ImageField(upload_to='users')
+    photo = models.ImageField(upload_to='users', null=True, blank=True)
     telephone = models.CharField(max_length=20, unique=True)
     email = models.CharField(max_length=255, unique=True)
-    address = models.TextField()
+    address = models.TextField(null=True, blank=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
 
     category = models.ForeignKey('Category', blank=True, null=True, on_delete=models.PROTECT)

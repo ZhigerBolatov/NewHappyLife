@@ -51,12 +51,13 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <div class="navbar-nav ms-auto p-4 p-lg-0">
-                <a href="index.html" class="nav-item nav-link active">Home</a>
+                <a href="index.html" class="nav-item nav-link">Home</a>
                 <a href="about.html" class="nav-item nav-link">About</a>
                 <a href="service.html" class="nav-item nav-link">Service</a>
+                <a href="doctors.html" class="nav-item nav-link">Doctors</a>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
             </div>
-            <a href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Appointment<i class="fa fa-arrow-right ms-3"></i></a>
+            <a id="user_link" href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block"></a>
         </div>
     </nav>
     <!-- Navbar End -->
@@ -73,13 +74,16 @@
                         <input id="iin_input" type="number" class="form-control" placeholder="Your IIN">
                     </div>
                 </div>
-                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.3s">
+                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.6s">
                     <div class="team-item position-relative rounded overflow-hidden">
                         <input id="password_input" type="password" class="form-control " placeholder="Your Password">
                     </div>
                 </div>
-                <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <button id="login_button" class="btn btn-primary" style="width: 100%" onclick="login()">Log In</button>
+                <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="0.9s">
+                    <button id="login_button" class="btn btn-primary" style="width: 100%; margin-top: 10px" onclick="login()">Log In</button>
+                </div>
+                <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="1.2s" align="center">
+                    <p style="margin-top: 10px">Don`t have an account? <a href="register.html">Register now</a></p>
                 </div>
             </div>
         </div>
@@ -162,6 +166,7 @@
     <script src="js/script.js"></script>
     <script>
         async function preload() {
+            load_auth_route();
             const categories_response = await fetchData('categories', 'GET', null);
             if (categories_response.status == 200) {
                 const category_footer_container = document.getElementById('category_footer_container');
@@ -190,6 +195,9 @@
         }
 
         async function login() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const doctor = urlParams.get('doctor');
+
             const iin_input = document.getElementById('iin_input');
             const password_input = document.getElementById('password_input');
             const login_button = document.getElementById('login_button');
@@ -206,7 +214,11 @@
                 login_button.innerHTML = 'Welcome!';
                 login_button.onclick = '';
                 setTimeout(function () {
-                   window.location.href = "index.html";
+                    if (doctor !== null) {
+                        window.location.href = `doctors_detail.html?doctor=${doctor}`;
+                    } else {
+                        window.location.href = "profile.html";
+                    }
                 }, 1000);
             } else {
                 login_error_text.innerHTML = 'Invalid login and/or password. Try again!';

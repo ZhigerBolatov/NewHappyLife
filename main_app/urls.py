@@ -5,6 +5,7 @@ from .views import *
 urlpatterns = [
     path('auth', AuthAPIView.as_view()),
     path('log_out', LogOutAPIView.as_view()),
+    path('register', RegistrationApiView.as_view()),
     path('user', UserAPIView.as_view()),
     path('stats', StatsApiView.as_view()),
     path('categories', CategoryApiView.as_view()),
@@ -13,4 +14,5 @@ urlpatterns = [
     path('doctors_detail/<int:doctor_id>', DoctorDetailApiView.as_view()),
     path('doctors_schedule/<int:doctor_id>', DoctorScheduleApiView.as_view()),
     path('newsletters', NewslettersApiView.as_view()),
+    path('booking', BookingApiView.as_view()),
 ]

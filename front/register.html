@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Happy Lifes</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/animate/animate.min.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body onload="preload()">
+    <!-- Spinner Start -->
+    <div id="spinner" class="show bg-white position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
+        <div class="spinner-grow text-primary" style="width: 3rem; height: 3rem;" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    <!-- Spinner End -->
+
+    <!-- Navbar Start -->
+    <nav class="navbar navbar-expand-lg bg-white navbar-light sticky-top p-0 wow fadeIn" data-wow-delay="0.1s">
+        <a href="index.html" class="navbar-brand d-flex align-items-center px-4 px-lg-5">
+            <h1 class="m-0 text-primary"><i class="far fa-hospital me-3"></i>HappyLifes</h1>
+        </a>
+        <button type="button" class="navbar-toggler me-4" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <div class="navbar-nav ms-auto p-4 p-lg-0">
+                <a href="index.html" class="nav-item nav-link">Home</a>
+                <a href="about.html" class="nav-item nav-link">About</a>
+                <a href="service.html" class="nav-item nav-link">Service</a>
+                <a href="doctors.html" class="nav-item nav-link">Doctors</a>
+                <a href="contact.html" class="nav-item nav-link">Contact</a>
+            </div>
+            <a id="user_link" href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block"></a>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+
+    <div class="container-xxl py-5" style="width: 25vw">
+        <div class="container">
+            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
+                <h1>Registration</h1>
+            </div>
+            <div class="bg-light rounded h-100 d-flex align-items-center p-5 row g-3" data-wow-delay="0.1s">
+                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="team-item position-relative rounded overflow-hidden">
+                        <label for="iin_input">IIN</label>
+                        <input id="iin_input" type="number" class="form-control" placeholder="123456789012">
+                    </div>
+                    <p align="left" id="iin_error_text" style="color: red;"></p>
+                </div>
+                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.6s">
+                    <div class="team-item position-relative rounded overflow-hidden">
+                        <label for="name_input">Name</label>
+                        <input id="name_input" type="text" class="form-control" placeholder="Example">
+                    </div>
+                    <p align="left" id="name_error_text" style="color: red;"></p>
+                </div>
+                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.9s">
+                    <div class="team-item position-relative rounded overflow-hidden">
+                        <label for="surname_input">Surname</label>
+                        <input id="surname_input" type="text" class="form-control" placeholder="Example">
+                    </div>
+                    <p align="left" id="surname_error_text" style="color: red;"></p>
+                </div>
+                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="1.2s">
+                    <div class="team-item position-relative rounded overflow-hidden">
+                        <label for="telephone_input">Telephone</label>
+                        <input id="telephone_input" type="number" class="form-control" placeholder="81234567890">
+                    </div>
+                    <p align="left" id="telephone_error_text" style="color: red;"></p>
+                </div>
+                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="1.5s">
+                    <div class="team-item position-relative rounded overflow-hidden">
+                        <label for="email_input">Email</label>
+                        <input id="email_input" type="email" class="form-control" placeholder="example@example.com">
+                    </div>
+                    <p align="left" id="email_error_text" style="color: red;"></p>
+                </div>
+                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="1.8s">
+                    <div class="team-item position-relative rounded overflow-hidden">
+                        <label for="password_input">Password</label>
+                        <input id="password_input" type="password" class="form-control " placeholder="***">
+                    </div>
+                    <br>
+                    <br>
+                </div>
+                <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="2.1s">
+                    <button id="registration_button" class="btn btn-primary" style="width: 100%; margin-top: 10px" disabled onclick="register()">Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Start -->
+    <div class="container-fluid bg-dark text-light footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.1s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-light mb-4">Address</h5>
+                    <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>Manassa 34/1, Almaty, Kazakhstan</p>
+                    <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>+7 (727) 222 1111</p>
+                    <p class="mb-2"><i class="fa fa-envelope me-3"></i>info@example.com</p>
+                    <div class="d-flex pt-2">
+                        <a class="btn btn-outline-light btn-social rounded-circle" href=""><i class="fab fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social rounded-circle" href=""><i class="fab fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-light btn-social rounded-circle" href=""><i class="fab fa-youtube"></i></a>
+                        <a class="btn btn-outline-light btn-social rounded-circle" href=""><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6" id="category_footer_container">
+                    <h5 class="text-light mb-4">Services</h5>
+
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-light mb-4">Quick Links</h5>
+                    <a class="btn btn-link" href="">About Us</a>
+                    <a class="btn btn-link" href="">Contact Us</a>
+                    <a class="btn btn-link" href="">Our Services</a>
+                    <a class="btn btn-link" href="">Terms & Condition</a>
+                    <a class="btn btn-link" href="">Support</a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-light mb-4">Newsletter</h5>
+                    <p>Don’t miss out on the latest in healthcare news, expert advice, and exclusive offers!</p>
+                    <div class="position-relative mx-auto" style="max-width: 400px;">
+                        <input id="newsletter_email_input" class="form-control w-100 py-3 ps-4 pe-5" type="email" placeholder="email">
+                        <button id="newsletter_follow_button" type="button" onclick="follow_newsletter()" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2" disabled>SignUp</button>
+                        <p id="newsletter_error_text" style="color: red;"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="copyright">
+                <div class="row">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; <a class="border-bottom" href="#">HappyLifes</a>, All Right Reserved.
+                    </div>
+                    <div class="col-md-6 text-center text-md-end">
+                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for support. ***/-->
+                        Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Footer End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/wow/wow.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        let inputs = [];
+
+        async function preload() {
+            load_auth_route();
+
+            const categories_response = await fetchData('categories', 'GET', null);
+            if (categories_response.status == 200) {
+                const category_footer_container = document.getElementById('category_footer_container');
+                let counter = 0;
+                for (let category of categories_response.data) {
+                    if (counter < 5) {
+                        category_footer_container.innerHTML += `<a class="btn btn-link" href="doctors.html?category=${category.id}">${category.name}</a>`;
+                    }
+                    counter += 1;
+                }
+            }
+
+            const iin_input = document.getElementById('iin_input');
+            const telephone_input = document.getElementById('telephone_input');
+            const email_input = document.getElementById('email_input');
+            const name_input = document.getElementById('name_input');
+            const surname_input = document.getElementById('surname_input');
+            const password_input = document.getElementById('password_input');
+
+            iin_input.dataset.is_valid = false;
+            telephone_input.dataset.is_valid = false;
+            email_input.dataset.is_valid = false;
+            name_input.dataset.is_valid = false;
+            surname_input.dataset.is_valid = false;
+            password_input.dataset.is_valid = false;
+
+            inputs.push(iin_input);
+            inputs.push(telephone_input);
+            inputs.push(email_input);
+            inputs.push(name_input);
+            inputs.push(surname_input);
+            inputs.push(password_input);
+
+            iin_input.addEventListener('input', function() {
+                document.getElementById('iin_error_text').innerHTML = '';
+
+                if (this.value.length < 12) {
+                    this.dataset.is_valid = false;
+                    this.style.color = 'red';
+                    this.style.border = '1px solid red';
+                } else if (this.value.length > 12) {
+                    this.value = this.value.slice(0, 12);
+                } else {
+                    this.dataset.is_valid = true;
+                    this.style.color = 'black';
+                    this.style.border = '';
+                }
+                check_inputs();
+            });
+
+            telephone_input.addEventListener('input', function() {
+                document.getElementById('telephone_error_text').innerHTML = '';
+
+                if (this.value.length < 11) {
+                    this.dataset.is_valid = false;
+                    this.style.color = 'red';
+                    this.style.border = '1px solid red';
+                } else if (this.value.length > 11) {
+                    this.value = this.value.slice(0, 11);
+                } else {
+                    this.dataset.is_valid = true;
+                    this.style.color = 'black';
+                    this.style.border = '';
+                }
+                check_inputs();
+            });
+
+            email_input.addEventListener('input', function() {
+                document.getElementById('email_error_text').innerHTML = '';
+
+                if (!validate_email(this.value)) {
+                    this.dataset.is_valid = false;
+                    this.style.color = 'red';
+                    this.style.border = '1px solid red';
+                } else {
+                    this.dataset.is_valid = true;
+                    this.style.color = 'black';
+                    this.style.border = '';
+                }
+                check_inputs();
+            });
+
+            name_input.addEventListener('input', function() {
+                if (this.value == '') {
+                    this.dataset.is_valid = false;
+                    this.style.color = 'red';
+                    this.style.border = '1px solid red';
+                } else {
+                    this.dataset.is_valid = true;
+                    this.style.color = 'black';
+                    this.style.border = '';
+                }
+                check_inputs();
+            });
+
+            surname_input.addEventListener('input', function() {
+                if (this.value == '') {
+                    this.dataset.is_valid = false;
+                    this.style.color = 'red';
+                    this.style.border = '1px solid red';
+                } else {
+                    this.dataset.is_valid = true;
+                    this.style.color = 'black';
+                    this.style.border = '';
+                }
+                check_inputs();
+            });
+
+            password_input.addEventListener('input', function() {
+                if (this.value == '') {
+                    this.dataset.is_valid = false;
+                    this.style.color = 'red';
+                    this.style.border = '1px solid red';
+                } else {
+                    this.dataset.is_valid = true;
+                    this.style.color = 'black';
+                    this.style.border = '';
+                }
+                check_inputs();
+            });
+
+            newsletter_init();
+        }
+
+        function check_inputs() {
+            let is_valid = true;
+            const registration_button = document.getElementById('registration_button');
+            for (let input of inputs) {
+                if (input.dataset.is_valid == 'false') {
+                    is_valid = false;
+                    break;
+                }
+            }
+            if (is_valid) {
+                registration_button.disabled = '';
+            } else {
+                registration_button.disabled = 'disabled';
+            }
+        }
+
+        async function register() {
+            const registration_button = document.getElementById('registration_button');
+            registration_button.disabled = 'disabled';
+            registration_button.innerHTML = 'Processing...';
+
+            let body = {};
+            for (let input of inputs) {
+                body[String(input.id).toLowerCase().replace('_input', '')] = input.value;
+            }
+            const register_response = await fetchData('register', 'POST', body);
+            if (register_response.status == 200) {
+                registration_button.innerHTML = 'Success!';
+                registration_button.classList.remove('btn-primary');
+                registration_button.classList.add('btn-success');
+                setTimeout(function () {
+                    window.location.href = "login.html";
+                }, 1000);
+            } else {
+                registration_button.innerHTML = 'Register';
+                if (register_response.data.field == 'iin') {
+                    const iin_input = document.getElementById('iin_input');
+                    iin_input.dataset.is_valid = false;
+                    iin_input.style.color = 'red';
+                    iin_input.style.border = '1px solid red';
+
+                    const iin_error_text = document.getElementById('iin_error_text');
+                    iin_error_text.innerHTML = 'This iin is already taken!';
+                }
+                if (register_response.data.field == 'email') {
+                    const email_input = document.getElementById('email_input');
+                    email_input.dataset.is_valid = false;
+                    email_input.style.color = 'red';
+                    email_input.style.border = '1px solid red';
+
+                    const email_error_text = document.getElementById('email_error_text');
+                    email_error_text.innerHTML = 'This email is already taken!';
+                }
+                if (register_response.data.field == 'telephone') {
+                    const telephone_input = document.getElementById('telephone_input');
+                    telephone_input.dataset.is_valid = false;
+                    telephone_input.style.color = 'red';
+                    telephone_input.style.border = '1px solid red';
+
+                    const telephone_error_text = document.getElementById('telephone_error_text');
+                    telephone_error_text.innerHTML = 'This telephone is already taken!';
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

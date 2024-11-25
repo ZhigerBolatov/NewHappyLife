@@ -54,23 +54,13 @@
                 <a href="index.html" class="nav-item nav-link">Home</a>
                 <a href="about.html" class="nav-item nav-link">About</a>
                 <a href="service.html" class="nav-item nav-link">Service</a>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown">Pages</a>
-                    <div class="dropdown-menu rounded-0 rounded-bottom m-0">
-                        <a href="feature.html" class="dropdown-item">Feature</a>
-                        <a href="team.html" class="dropdown-item active">Our Doctor</a>
-                        <a href="appointment.html" class="dropdown-item">Appointment</a>
-                        <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                        <a href="404.html" class="dropdown-item">404 Page</a>
-                    </div>
-                </div>
+                <a href="doctors.html" class="nav-item nav-link">Doctors</a>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
             </div>
-            <a href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block">Appointment<i class="fa fa-arrow-right ms-3"></i></a>
+            <a id="user_link" href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block"></a>
         </div>
     </nav>
     <!-- Navbar End -->
-
 
     <!-- Page Header Start -->
     <div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.5s">
@@ -86,7 +76,6 @@
         </div>
     </div>
     <!-- Page Header End -->
-
 
     <div class="container-xxl py-5">
         <div class="container">
@@ -178,10 +167,25 @@
     </div>
     <!-- Footer End -->
 
+    <div class="modal fade" align="center" id="exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Your Appointment</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="appointment_info" style="color: black;"></div>
+                <div class="modal-footer" id="modal_footer">
+                    <button id="cancel_button" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="confirm_button" type="button" class="btn btn-primary" onclick="make_appointment()">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
-
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -199,7 +203,12 @@
     <script src="js/main.js"></script>
     <script src="js/script.js"></script>
     <script>
+        let selected_button = null;
+        let doctors_name = null;
+        let doctors_surname = null;
+
         async function preload() {
+             load_auth_route();
             const urlParams = new URLSearchParams(window.location.search);
             const doctor = urlParams.get('doctor');
             if (doctor === null) {
@@ -214,6 +223,19 @@
                 document.getElementById('doctors_breadcrumb').innerHTML = `${data.name} ${data.surname}`;
                 document.getElementById('doctors_category').innerHTML = `${data.category}`;
                 document.getElementById('doctors_bio').innerHTML = `${data.bio}`;
+
+                doctors_name = data.name;
+                doctors_surname = data.surname;
+            }
+
+            let is_authenticated = false;
+            let role = null;
+            const is_authenticated_response = await fetchData('auth', 'GET', null);
+            if (is_authenticated_response.status == 200) {
+                if (is_authenticated_response.data.is_authenticated) {
+                    is_authenticated = true;
+                    role = is_authenticated_response.data.role;
+                }
             }
 
             url = `doctors_schedule/${doctor}`;
@@ -266,6 +288,27 @@
                             let button = document.createElement('button');
                             button.innerHTML = current_time_slot.time_slots[i];
                             button.classList.add('btn', 'btn-primary');
+                            button.setAttribute('data-bs-toggle', 'modal');
+                            button.setAttribute('data-bs-target', '#exampleModal');
+                            if (!is_authenticated) {
+                                button.addEventListener('click', function() {
+                                    window.location.href = `login.html?doctor=${doctor}`;
+                                });
+                            } else {
+                                button.addEventListener('click', async function() {
+                                    let datetime = `${thead.childNodes[j].dataset.year}-`;
+                                    datetime += `${thead.childNodes[j].dataset.month}-`;
+                                    datetime += `${thead.childNodes[j].dataset.date}T`;
+                                    datetime += `${current_time_slot.time_slots[i]}:00`;
+
+                                    selected_button = button;
+                                    const appointment_info = document.getElementById('appointment_info');
+                                    appointment_info.innerHTML = `Confirm your appointment to doctor "${doctors_name} ${doctors_surname}"`;
+                                    appointment_info.innerHTML += ` ${thead.childNodes[j].dataset.date}-${thead.childNodes[j].dataset.month}-${thead.childNodes[j].dataset.year}`;
+                                    appointment_info.innerHTML += ` at ${current_time_slot.time_slots[i]}?`;
+                                    this.dataset.datetime = datetime;
+                                });
+                            }
                             if (today.getDate() == thead.childNodes[j].dataset.date && today.getMonth() + 1 == thead.childNodes[j].dataset.month) {
                                 if (isTimePassed(current_time_slot.time_slots[i])) {
                                     button.disabled = 'disabled';
@@ -299,6 +342,30 @@
             }
 
             newsletter_init();
+        }
+
+        async function make_appointment() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const doctor = urlParams.get('doctor');
+            const body = {
+                doctor: doctor,
+                datetime: selected_button.dataset.datetime
+            };
+            const booking_response = await fetchData('booking', 'POST', body);
+            if (booking_response.status == 200) {
+                const appointment_info = document.getElementById('appointment_info');
+                appointment_info.innerHTML = 'Your appointment successfully registered!';
+
+                document.getElementById('confirm_button').remove();
+                document.getElementById('modal_footer').style.justifyContent  = 'center';
+                const cancel_button = document.getElementById('cancel_button');
+                cancel_button.classList.remove('btn-secondary');
+                cancel_button.classList.add('btn-success');
+                cancel_button.innerHTML = 'Great!';
+                cancel_button.addEventListener('click', function() {
+                    window.location.reload();
+                });
+            }
         }
     </script>
 </body>
