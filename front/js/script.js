@@ -147,7 +147,7 @@ async function load_auth_route() {
         is_authenticated = is_authenticated_response.data.is_authenticated;
     }
     const user_link = document.getElementById('user_link');
-    if (!is_authenticated) {
+    if (is_authenticated) {
         user_link.href = 'cabinet.html';
         user_link.innerHTML = 'Cabinet<i class="fa fa-arrow-up ms-3"></i>';
     } else {
