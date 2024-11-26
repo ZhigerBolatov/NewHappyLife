@@ -26,7 +26,7 @@ WEEK_DAY_CHOICES = {
 }
 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin):
     iin = models.CharField(max_length=12, unique=True)
     name = models.CharField(max_length=255)
     surname = models.CharField(max_length=255)
@@ -57,7 +57,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class ResetPasswordToken(models.Model):
-    user = models.ForeignKey('CustomUser', on_delete=models.CASCADE)
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
     token = models.CharField(max_length=64)
     created_at = models.DateTimeField(auto_now=True)
 
@@ -107,8 +107,8 @@ class Schedule(models.Model):
 
 
 class Booking(models.Model):
-    patient = models.ForeignKey('CustomUser', related_name='patient_booking', on_delete=models.CASCADE)
-    doctor = models.ForeignKey('CustomUser', related_name='doctor_booking', on_delete=models.CASCADE)
+    patient = models.ForeignKey('User', related_name='patient_booking', on_delete=models.CASCADE)
+    doctor = models.ForeignKey('User', related_name='doctor_booking', on_delete=models.CASCADE)
     datetime = models.DateTimeField()
 
     class Meta:
