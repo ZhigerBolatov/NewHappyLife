@@ -6,6 +6,8 @@ urlpatterns = [
     path('auth', AuthAPIView.as_view()),
     path('log_out', LogOutAPIView.as_view()),
     path('register', RegistrationApiView.as_view()),
+    path('reset_password', PasswordResetAPIView.as_view()),
+    path('set_new_password', SetNewPasswordAPIView.as_view()),
     path('user', UserAPIView.as_view()),
     path('stats', StatsApiView.as_view()),
     path('categories', CategoryApiView.as_view()),

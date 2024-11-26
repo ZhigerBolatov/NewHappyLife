@@ -62,29 +62,46 @@
     </nav>
     <!-- Navbar End -->
 
-    <div class="container-xxl py-5" style="width: 25vw">
-        <div class="container">
-            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                <h1>Log In</h1>
-            </div>
-            <div class="bg-light rounded h-100 d-flex align-items-center p-5 row g-3" data-wow-delay="0.1s">
-                <h6 align="center" id="login_error_text" style="color: red;"></h6>
-                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="team-item position-relative rounded overflow-hidden">
-                        <input id="iin_input" type="number" class="form-control" placeholder="Your IIN">
+    <div class="container-xxl py-5">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-lg-6 mb-4 mb-lg-0">
+                <div class="card mb-3" style="border-radius: .5rem;">
+                    <div class="row g-0">
+                        <div class="col-md-4 gradient-custom text-center text-white" style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            <img src="img/user.png" id="user_photo" alt="Avatar" class="img-fluid my-5" style="width: 150px;" />
+                            <h5 id="user_name"></h5>
+                            <p>Web Designer</p>
+                            <i class="far fa-edit mb-5"></i>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body p-4">
+                                <h6>Information</h6>
+                                <hr class="mt-0 mb-4">
+                                <div class="row pt-1">
+                                    <div class="col-6 mb-3">
+                                        <h6>Email</h6>
+                                        <p id="user_email" class="text-muted"></p>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <h6>Telephone</h6>
+                                        <p id="user_telephone" class="text-muted"></p>
+                                    </div>
+                                </div>
+                                <div class="row pt-1">
+                                    <div class="col-12 mb-3">
+                                        <h6>IIN</h6>
+                                        <p id="user_iin" class="text-muted"></p>
+                                    </div>
+                                </div>
+                                <div class="row pt-1">
+                                    <div class="col-12 mb-3">
+                                        <h6>Address</h6>
+                                        <p id="user_address" class="text-muted"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.6s">
-                    <div class="team-item position-relative rounded overflow-hidden">
-                        <input id="password_input" type="password" class="form-control " placeholder="Your Password">
-                    </div>
-                </div>
-                <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="0.9s">
-                    <button id="login_button" class="btn btn-primary" style="width: 100%; margin-top: 10px" onclick="login()">Log In</button>
-                </div>
-                <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="1.2s" align="center">
-                    <p style="margin-top: 10px">Don`t have an account? <a href="register.html">Register now</a></p>
-                    <p style="margin-top: 10px"><a href="reset_password.html">Forgot password?</a></p>
                 </div>
             </div>
         </div>
@@ -180,52 +197,8 @@
                 }
             }
 
-            const iin_input = document.getElementById('iin_input');
-            iin_input.addEventListener('input', function() {
-                if (this.value.length < 12) {
-                    this.style.color = 'red';
-                    this.style.border = '1px solid red';
-                } else if (this.value.length > 12) {
-                    this.value = this.value.slice(0, 12);
-                } else {
-                    this.style.color = 'black';
-                    this.style.border = '';
-                }
-            });
             newsletter_init();
-        }
-
-        async function login() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const doctor = urlParams.get('doctor');
-
-            const iin_input = document.getElementById('iin_input');
-            const password_input = document.getElementById('password_input');
-            const login_button = document.getElementById('login_button');
-            const login_error_text = document.getElementById('login_error_text');
-            login_error_text.innerHTML = '';
-            const body = {
-                iin: iin_input.value,
-                password: password_input.value
-            }
-            const login_response = await fetchData('auth', 'POST', body);
-            if (login_response.status == 200) {
-                login_button.classList.remove('btn-primary');
-                login_button.classList.add('btn-success');
-                login_button.innerHTML = 'Welcome!';
-                login_button.onclick = '';
-                setTimeout(function () {
-                    if (doctor !== null) {
-                        window.location.href = `doctors_detail.html?doctor=${doctor}`;
-                    } else {
-                        window.location.href = "profile.html";
-                    }
-                }, 1000);
-            } else {
-                login_error_text.innerHTML = 'Invalid login and/or password. Try again!';
-            }
         }
     </script>
 </body>
-
 </html>
