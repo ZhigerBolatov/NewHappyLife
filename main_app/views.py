@@ -48,16 +48,16 @@ class RegistrationApiView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        check_email = User.objects.filter(email=request.data['email'])
+        check_email = CustomUser.objects.filter(email=request.data['email'])
         if len(check_email) > 0:
             return Response(data={'success': False, 'field': 'email'}, status=status.HTTP_400_BAD_REQUEST)
 
-        check_telephone = User.objects.filter(telephone=request.data['telephone'])
+        check_telephone = CustomUser.objects.filter(telephone=request.data['telephone'])
         if len(check_telephone) > 0:
             return Response(data={'success': False, 'field': 'telephone'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = User.objects.create_user(iin=request.data['iin'], password=request.data['password'])
+            user = CustomUser.objects.create_user(iin=request.data['iin'], password=request.data['password'])
         except IntegrityError:
             return Response(data={'success': False, 'field': 'iin'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -74,7 +74,7 @@ class PasswordResetAPIView(APIView):
 
     def post(self, request):
         email = request.data.get('email')
-        user = User.objects.filter(email=email).first()
+        user = CustomUser.objects.filter(email=email).first()
         if user:
             random_token = os.urandom(3).hex()[:6]
             reset_password_token = ResetPasswordToken(user=user, token=random_token)
@@ -94,7 +94,7 @@ class SetNewPasswordAPIView(APIView):
 
     def post(self, request):
         email = request.data.get('email')
-        user = User.objects.filter(email=email).first()
+        user = CustomUser.objects.filter(email=email).first()
         if user:
             token = request.data.get('token')
             reset_password_token = ResetPasswordToken.objects.filter(Q(user=user) & Q(token=token)).first()
@@ -133,9 +133,9 @@ class StatsApiView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        patients = User.objects.filter(role='PT')
-        doctors = User.objects.filter(role='DC')
-        admins = User.objects.filter(role='AD')
+        patients = CustomUser.objects.filter(role='PT')
+        doctors = CustomUser.objects.filter(role='DC')
+        admins = CustomUser.objects.filter(role='AD')
         data = {
             'patients_count': len(patients),
             'doctors_count': len(doctors),
@@ -157,7 +157,7 @@ class DoctorApiView(APIView):
     permission_classes = [IsAdminOrReadOnly]
 
     def get(self, request):
-        doctors = User.objects.filter(role='DC')
+        doctors = CustomUser.objects.filter(role='DC')
         data = UserSerializer(instance=doctors, many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -169,14 +169,14 @@ class DoctorSearchApiView(APIView):
         name = request.GET.get('name')
         category = request.GET.get('category')
         if name is not None and category is not None:
-            doctors = User.objects.filter(Q(name__icontains=name) | Q(surname__icontains=name))
+            doctors = CustomUser.objects.filter(Q(name__icontains=name) | Q(surname__icontains=name))
             doctors = doctors.filter(Q(category=category))
         elif name is not None:
-            doctors = User.objects.filter(Q(name__icontains=name) | Q(surname__icontains=name))
+            doctors = CustomUser.objects.filter(Q(name__icontains=name) | Q(surname__icontains=name))
         elif category is not None:
-            doctors = User.objects.filter(Q(category=category))
+            doctors = CustomUser.objects.filter(Q(category=category))
         else:
-            doctors = User.objects.all()
+            doctors = CustomUser.objects.all()
         data = UserSerializer(instance=doctors, many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -185,7 +185,7 @@ class DoctorDetailApiView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, doctor_id):
-        doctor = get_object_or_404(User, id=doctor_id)
+        doctor = get_object_or_404(CustomUser, id=doctor_id)
         data = UserSerializer(instance=doctor).data
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -194,7 +194,7 @@ class DoctorScheduleApiView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, doctor_id):
-        doctor = get_object_or_404(User, id=doctor_id)
+        doctor = get_object_or_404(CustomUser, id=doctor_id)
         data = ScheduleSerializer(instance=doctor.schedule).data
         bookings = Booking.objects.filter(doctor=doctor)
         data.update({'bookings': BookingSerializer(instance=bookings, many=True).data})

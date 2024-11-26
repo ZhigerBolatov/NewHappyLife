@@ -168,7 +168,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CELERY_BROKER_URL = "redis://redis:6379"
 CELERY_RESULT_BACKEND = "redis://redis:6379"
 
-AUTH_USER_MODEL = 'main_app.User'
+AUTH_USER_MODEL = 'main_app.CustomUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_PARSER_CLASS': [
