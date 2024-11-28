@@ -76,38 +76,32 @@
 
             <div class="col col-lg-10 mb-4 mb-lg-0">
                 <div class="card mb-3" style="border-radius: .5rem;">
-                    <div class="row g-0">
-                        <div class="col-md-4 gradient-custom text-center text-white" style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
-                            <img src="img/user.png" id="user_photo" alt="Avatar" class="img-fluid my-5" style="width: 150px;" />
-                            <h5 id="user_name"></h5>
-                            <p id="user_category" class="text-muted"></p>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body p-4">
-                                <h6>Information</h6>
-                                <hr class="mt-0 mb-4">
-                                <div class="row pt-1">
-                                    <div class="col-6 mb-3">
-                                        <h6>Email</h6>
-                                        <p id="user_email" class="text-muted"></p>
+                    <div class="row g-0" id="user_history ">
+                        <div class="col-md-11 gradient-custom text-center text-white"
+                             style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
+                            <div class="col-md-12 border rounded" style="margin-top: 20px; margin-bottom: 20px; background-color: #C7DCFB; border-color: black !important">
+                                <h5 style="margin: 20px; border-bottom: 1px solid gray">Filters</h5>
+                                <div class="row gx-5" align="left" style="margin-left: 20px;">
+                                    <div class="col-3 mb-3">
+                                        <h6>Select Date</h6>
+                                        <input id="date_filter" class="form-control" type="date">
                                     </div>
-                                    <div class="col-6 mb-3">
-                                        <h6>Telephone</h6>
-                                        <p id="user_telephone" class="text-muted"></p>
+                                    <div class="col-8 mb-3">
+                                        <h6>Search By Patient</h6>
+                                        <input id="patient_filter" class="form-control" type="text" placeholder="Name, Surname and/or IIN">
                                     </div>
                                 </div>
-                                <div class="row pt-1">
-                                    <div class="col-12 mb-3">
-                                        <h6>IIN</h6>
-                                        <p id="user_iin" class="text-muted"></p>
+                                <div class="row gx-5" style="margin-left: 20px;">
+                                    <div class="col-6 mb-3" align="left">
+                                        <button class="btn btn-secondary" onclick="clear_filters()">Clear Filters</button>
+                                    </div>
+                                    <div class="col-5 mb-3" align="right">
+                                        <button id="submit_filter_button" class="btn btn-primary" onclick="get_content()" disabled>Submit</button>
                                     </div>
                                 </div>
-                                <div class="row pt-1">
-                                    <div class="col-12 mb-3">
-                                        <h6>Address</h6>
-                                        <p id="user_address" class="text-muted"></p>
-                                    </div>
-                                </div>
+                            </div>
+                            <div id="history_container">
+
                             </div>
                         </div>
                     </div>
@@ -171,7 +165,6 @@
     </div>
     <!-- Footer End -->
 
-
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
 
@@ -192,9 +185,13 @@
     <script src="js/main.js"></script>
     <script src="js/script.js"></script>
     <script>
+        let selected_appointment = null;
+        const date_filter = document.getElementById('date_filter');
+        const patient_filter = document.getElementById('patient_filter');
+        const submit_filter_button = document.getElementById('submit_filter_button');
+
         async function preload() {
             const user_role = await load_auth_route();
-
             if (user_role == null) {
                 window.location.href = 'login.html';
             }
@@ -206,21 +203,17 @@
                 user_link.onclick = logout;
             }
 
-            const user_response = await fetchData('user', 'GET', null);
-            if (user_response.status == 200) {
-                const data = user_response.data;
-                document.getElementById('user_name').innerHTML = `${data.name} ${data.surname}`;
-                if (data.category != null) {
-                    document.getElementById('user_category').innerHTML = data.category;
+            date_filter.addEventListener('change', function() {
+                submit_filter_button.disabled = '';
+            });
+
+            patient_filter.addEventListener('input', function() {
+                if (this.value != '') {
+                    submit_filter_button.disabled = '';
                 }
-                document.getElementById('user_email').innerHTML = data.email;
-                document.getElementById('user_telephone').innerHTML = data.telephone;
-                document.getElementById('user_iin').innerHTML = data.iin;
-                document.getElementById('user_address').innerHTML = data.address;
-                if (data.photo !== null) {
-                    document.getElementById('user_photo').src = backEndUrl + data.photo;
-                }
-            }
+            });
+
+            get_content();
 
             const categories_response = await fetchData('categories', 'GET', null);
             if (categories_response.status == 200) {
@@ -235,6 +228,88 @@
             }
 
             newsletter_init();
+        }
+
+        function clear_filters() {
+            date_filter.value = '';
+            patient_filter.value = '';
+            submit_filter_button.disabled = 'disabled';
+            get_content();
+        }
+
+        async function get_content() {
+            let url = 'booking';
+            if (date_filter.value != '' && patient_filter.value != '') {
+                url += `?datetime=${date_filter.value}&patient=${patient_filter.value}`;
+            } else if (date_filter.value != '') {
+                url += `?datetime=${date_filter.value}`;
+            } else if (patient_filter.value != '') {
+                url += `?patient=${patient_filter.value}`;
+            }
+            const booking_history_response = await fetchData(url, 'GET', null);
+            if (booking_history_response.status == 200) {
+                const data = booking_history_response.data;
+                const history_container = document.getElementById('history_container');
+                history_container.innerHTML = '';
+                for (let booking of data) {
+                    const booking_container = document.createElement('div');
+                    booking_container.classList.add('col-md-12', 'border', 'rounded');
+                    booking_container.style.marginTop = '20px';
+                    booking_container.style.marginBottom = '20px';
+                    booking_container.innerHTML = `<h5 style="margin: 20px; border-bottom: 1px solid gray">${booking.datetime.date}-${booking.datetime.month}-${booking.datetime.year} ${booking.datetime.time}</h5>`;
+
+                    let row = document.createElement('div');
+                    row.classList.add('row', 'gx-5');
+                    row.style.marginLeft = '20px';
+                    row.align = 'left';
+
+                    let col = document.createElement('div');
+                    col.classList.add('col-5', 'mb-3');
+                    col.innerHTML = '<h6>Patient</h6>';
+                    col.innerHTML += `<p class="text-muted">${booking.patient.name} ${booking.patient.surname}<br>${booking.patient.iin}</p>`;
+                    row.appendChild(col);
+
+                    col = document.createElement('div');
+                    col.classList.add('col-6', 'mb-3');
+                    col.innerHTML = '<h6>Description</h6>';
+                    if (booking.description != '') {
+                        col.innerHTML += `<p class="text-muted">${booking.description}</p>`;
+                    } else {
+                        col.innerHTML += `<p class="text-muted">Empty</p>`;
+                    }
+                    row.appendChild(col);
+                    booking_container.appendChild(row);
+
+                    row = document.createElement('div');
+                    row.classList.add('row', 'gx-5');
+                    row.style.marginLeft = '20px';
+                    row.align = 'left';
+
+                    col = document.createElement('div');
+                    col.classList.add('col-11', 'mb-3');
+                    col.align = 'right';
+                    col.innerHTML = `<button id="accept_booking_button_${booking.id}" class="btn btn-primary" onclick="accept_booking(${booking.id})">Done Appointment</button>`;
+                    row.appendChild(col);
+                    booking_container.appendChild(row);
+                    history_container.appendChild(booking_container);
+                }
+            }
+        }
+
+        async function accept_booking(appointment_id) {
+            const body = {
+                id: appointment_id
+            }
+            const accept_booking_response = await fetchData('accept_booking', 'PATCH', body);
+            if (accept_booking_response.status == 200) {
+                const accept_booking_button = document.getElementById(`accept_booking_button_${appointment_id}`);
+                accept_booking_button.innerHTML = 'Success!';
+                accept_booking_button.classList.remove('btn-primary');
+                accept_booking_button.classList.add('btn-success');
+                setTimeout(function () {
+                    get_content();
+                }, 1000);
+            }
         }
     </script>
 </body>

@@ -76,39 +76,34 @@
 
             <div class="col col-lg-10 mb-4 mb-lg-0">
                 <div class="card mb-3" style="border-radius: .5rem;">
-                    <div class="row g-0">
-                        <div class="col-md-4 gradient-custom text-center text-white" style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
-                            <img src="img/user.png" id="user_photo" alt="Avatar" class="img-fluid my-5" style="width: 150px;" />
-                            <h5 id="user_name"></h5>
-                            <p id="user_category" class="text-muted"></p>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body p-4">
-                                <h6>Information</h6>
-                                <hr class="mt-0 mb-4">
-                                <div class="row pt-1">
-                                    <div class="col-6 mb-3">
-                                        <h6>Email</h6>
-                                        <p id="user_email" class="text-muted"></p>
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                        <h6>Telephone</h6>
-                                        <p id="user_telephone" class="text-muted"></p>
-                                    </div>
-                                </div>
-                                <div class="row pt-1">
-                                    <div class="col-12 mb-3">
-                                        <h6>IIN</h6>
-                                        <p id="user_iin" class="text-muted"></p>
-                                    </div>
-                                </div>
-                                <div class="row pt-1">
-                                    <div class="col-12 mb-3">
-                                        <h6>Address</h6>
-                                        <p id="user_address" class="text-muted"></p>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="row g-0" id="user_history ">
+                        <div class="col-md-11 gradient-custom text-center text-white"
+                             style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
+                            <h5 style="margin: 10px; color: black;" align="left" id="schedule_name"></h5>
+                            <table class="table table-bordered align-middle" style="margin: 10px; color: black;">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Mon</th>
+                                        <th scope="col">Tue</th>
+                                        <th scope="col">Wed</th>
+                                        <th scope="col">Thu</th>
+                                        <th scope="col">Fri</th>
+                                        <th scope="col">Sat</th>
+                                        <th scope="col">Sun</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="schedule_table_body">
+                                    <tr>
+                                        <td scope="col" id="Mon"></td>
+                                        <td scope="col" id="Tue"></td>
+                                        <td scope="col" id="Wed"></td>
+                                        <td scope="col" id="Thu"></td>
+                                        <td scope="col" id="Fri"></td>
+                                        <td scope="col" id="Sat"></td>
+                                        <td scope="col" id="Sun"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -171,7 +166,6 @@
     </div>
     <!-- Footer End -->
 
-
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
 
@@ -194,7 +188,6 @@
     <script>
         async function preload() {
             const user_role = await load_auth_route();
-
             if (user_role == null) {
                 window.location.href = 'login.html';
             }
@@ -208,17 +201,19 @@
 
             const user_response = await fetchData('user', 'GET', null);
             if (user_response.status == 200) {
-                const data = user_response.data;
-                document.getElementById('user_name').innerHTML = `${data.name} ${data.surname}`;
-                if (data.category != null) {
-                    document.getElementById('user_category').innerHTML = data.category;
-                }
-                document.getElementById('user_email').innerHTML = data.email;
-                document.getElementById('user_telephone').innerHTML = data.telephone;
-                document.getElementById('user_iin').innerHTML = data.iin;
-                document.getElementById('user_address').innerHTML = data.address;
-                if (data.photo !== null) {
-                    document.getElementById('user_photo').src = backEndUrl + data.photo;
+                const schedule_response = await fetchData(`doctors_schedule/${user_response.data.id}`, 'GET', null);
+                if (schedule_response.status == 200) {
+                    document.getElementById('schedule_name').innerHTML = schedule_response.data.name;
+                    const schedule_table_body = document.getElementById('schedule_table_body');
+                    for (let time_slot of schedule_response.data.time_slots) {
+                        document.getElementById(time_slot.week_day).innerHTML = `${time_slot.starts_at}<br>to<br>${time_slot.ends_at}`;
+                    }
+                    for (const child of schedule_table_body.children[0].children) {
+                        if (child.innerHTML == '') {
+                            child.innerHTML = 'Day Off';
+                            child.style.color = 'green';
+                        }
+                    }
                 }
             }
 

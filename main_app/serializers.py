@@ -48,4 +48,6 @@ class BookingSerializer(ModelSerializer):
     def to_representation(self, instance):
         representation = super().to_representation(instance)
         representation['datetime'] = datetime_serialize(representation['datetime'])
+        representation['patient'] = UserSerializer(instance=instance.patient, many=False).data
+        representation['doctor'] = UserSerializer(instance=instance.doctor, many=False).data
         return representation

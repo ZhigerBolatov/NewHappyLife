@@ -149,11 +149,48 @@ async function load_auth_route() {
     const user_link = document.getElementById('user_link');
     if (is_authenticated) {
         user_link.href = 'cabinet.html';
+        user_link.dataset.is_authenticated = 'true';
         user_link.innerHTML = 'Cabinet<i class="fa fa-arrow-up ms-3"></i>';
+
+        const cabinet_nav = document.getElementById('cabinet_nav');
+        if (cabinet_nav != null) {
+            let cabinet_routing = null;
+            if (is_authenticated_response.data.role == 'PT') {
+                cabinet_routing = [
+                    {href: 'cabinet.html', text: 'Profile'},
+                    {href: 'patient_history.html', text: 'History'},
+                    {href: 'patient_appointments.html', text: 'Appointments'},
+                ];
+            } else if (is_authenticated_response.data.role == 'DC') {
+                cabinet_routing = [
+                    {href: 'cabinet.html', text: 'Profile'},
+                    {href: 'doctor_history.html', text: 'History'},
+                    {href: 'doctor_appointments.html', text: 'Appointments'},
+                    {href: 'doctor_schedule.html', text: 'Schedule'},
+                ];
+            }
+            for (let route of cabinet_routing) {
+                let li = document.createElement('li');
+                li.classList.add('nav-item');
+                let a = document.createElement('a');
+                a.classList.add('nav-link');
+                let current_url = window.location.pathname.split( '/' ).pop();
+                if (current_url == route.href) {
+                    a.classList.add('active');
+                }
+                a.href = route.href;
+                a.innerHTML = route.text;
+
+                li.appendChild(a);
+                cabinet_nav.appendChild(li);
+            }
+        }
     } else {
         user_link.href = 'login.html';
+        user_link.dataset.is_authenticated = 'false';
         user_link.innerHTML = 'Log In<i class="fa fa-arrow-down ms-3"></i>';
     }
+    return is_authenticated_response.data.role;
 }
 
 async function logout() {

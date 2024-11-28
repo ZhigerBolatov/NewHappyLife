@@ -76,39 +76,9 @@
 
             <div class="col col-lg-10 mb-4 mb-lg-0">
                 <div class="card mb-3" style="border-radius: .5rem;">
-                    <div class="row g-0">
-                        <div class="col-md-4 gradient-custom text-center text-white" style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
-                            <img src="img/user.png" id="user_photo" alt="Avatar" class="img-fluid my-5" style="width: 150px;" />
-                            <h5 id="user_name"></h5>
-                            <p id="user_category" class="text-muted"></p>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body p-4">
-                                <h6>Information</h6>
-                                <hr class="mt-0 mb-4">
-                                <div class="row pt-1">
-                                    <div class="col-6 mb-3">
-                                        <h6>Email</h6>
-                                        <p id="user_email" class="text-muted"></p>
-                                    </div>
-                                    <div class="col-6 mb-3">
-                                        <h6>Telephone</h6>
-                                        <p id="user_telephone" class="text-muted"></p>
-                                    </div>
-                                </div>
-                                <div class="row pt-1">
-                                    <div class="col-12 mb-3">
-                                        <h6>IIN</h6>
-                                        <p id="user_iin" class="text-muted"></p>
-                                    </div>
-                                </div>
-                                <div class="row pt-1">
-                                    <div class="col-12 mb-3">
-                                        <h6>Address</h6>
-                                        <p id="user_address" class="text-muted"></p>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="row g-0" id="user_history ">
+                        <div id="history_container" class="col-md-11 gradient-custom text-center text-white"
+                             style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
                         </div>
                     </div>
                 </div>
@@ -171,6 +141,21 @@
     </div>
     <!-- Footer End -->
 
+    <div class="modal fade" align="center" id="exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Your Appointment</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="appointment_info" style="color: black;"></div>
+                <div class="modal-footer" id="modal_footer">
+                    <button id="cancel_button" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="confirm_button" type="button" class="btn btn-danger" onclick="cancel_appointment()">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
@@ -192,9 +177,10 @@
     <script src="js/main.js"></script>
     <script src="js/script.js"></script>
     <script>
+        let selected_appointment = null;
+
         async function preload() {
             const user_role = await load_auth_route();
-
             if (user_role == null) {
                 window.location.href = 'login.html';
             }
@@ -206,19 +192,91 @@
                 user_link.onclick = logout;
             }
 
-            const user_response = await fetchData('user', 'GET', null);
-            if (user_response.status == 200) {
-                const data = user_response.data;
-                document.getElementById('user_name').innerHTML = `${data.name} ${data.surname}`;
-                if (data.category != null) {
-                    document.getElementById('user_category').innerHTML = data.category;
-                }
-                document.getElementById('user_email').innerHTML = data.email;
-                document.getElementById('user_telephone').innerHTML = data.telephone;
-                document.getElementById('user_iin').innerHTML = data.iin;
-                document.getElementById('user_address').innerHTML = data.address;
-                if (data.photo !== null) {
-                    document.getElementById('user_photo').src = backEndUrl + data.photo;
+            const booking_history_response = await fetchData('booking', 'GET', null);
+            if (booking_history_response.status == 200) {
+                const data = booking_history_response.data;
+                const history_container = document.getElementById('history_container');
+                for (let booking of data) {
+                    const booking_container = document.createElement('div');
+                    booking_container.classList.add('col-md-12', 'border', 'rounded');
+                    booking_container.style.marginTop = '20px';
+                    booking_container.style.marginBottom = '20px';
+                    booking_container.innerHTML = `<h5 style="margin: 20px; border-bottom: 1px solid gray">${booking.datetime.date}-${booking.datetime.month}-${booking.datetime.year} ${booking.datetime.time}</h5>`;
+
+                    let row = document.createElement('div');
+                    row.classList.add('row', 'gx-5');
+                    row.style.marginLeft = '20px';
+                    row.align = 'left';
+
+                    let col = document.createElement('div');
+                    col.classList.add('col-5', 'mb-3');
+                    col.innerHTML = '<h6>Category</h6>';
+                    col.innerHTML += `<p class="text-muted">${booking.doctor.category}</p>`;
+                    row.appendChild(col);
+
+                    col = document.createElement('div');
+                    col.classList.add('col-5', 'mb-3');
+                    col.innerHTML = '<h6>Doctor</h6>';
+                    col.innerHTML += `<p class="text-muted">${booking.doctor.name} ${booking.doctor.surname}</p>`;
+                    row.appendChild(col);
+                    booking_container.appendChild(row);
+
+                    row = document.createElement('div');
+                    row.classList.add('row', 'gx-5');
+                    row.style.marginLeft = '20px';
+                    row.align = 'left';
+
+                    col = document.createElement('div');
+                    col.classList.add('col-12', 'mb-3');
+                    col.innerHTML = '<h6>Description</h6>';
+                    if (booking.description != '') {
+                        col.innerHTML += `<p class="text-muted">${booking.description}</p>`;
+                    } else {
+                        col.innerHTML += `<p class="text-muted">Empty</p>`;
+                    }
+                    row.appendChild(col);
+                    booking_container.appendChild(row);
+
+                    row = document.createElement('div');
+                    row.classList.add('row', 'gx-5');
+                    row.style.marginLeft = '20px';
+                    row.align = 'left';
+
+                    col = document.createElement('div');
+                    col.classList.add('col-12', 'mb-3');
+                    col.innerHTML = '<h6>Status</h6>';
+                    col.innerHTML += `<p style="color: green">${booking.status}</p>`;
+
+                    row.appendChild(col);
+                    booking_container.appendChild(row);
+
+                    row = document.createElement('div');
+                    row.classList.add('row', 'gx-5');
+                    row.style.marginLeft = '20px';
+                    row.align = 'right';
+
+                    col = document.createElement('div');
+                    col.classList.add('col-11', 'mb-3');
+
+                    const cancelButton = document.createElement('button');
+                    cancelButton.classList.add('btn', 'btn-danger');
+                    cancelButton.innerHTML = 'Cancel Appointment';
+                    cancelButton.setAttribute('data-bs-toggle', 'modal');
+                    cancelButton.setAttribute('data-bs-target', '#exampleModal');
+                    cancelButton.dataset.id = booking.id;
+                    cancelButton.addEventListener('click', function() {
+                        const appointment_info = document.getElementById('appointment_info');
+                        appointment_info.innerHTML = `Are sure to cancel appointment to ${booking.doctor.category} at `;
+                        appointment_info.innerHTML += `${booking.datetime.date}-${booking.datetime.month}-${booking.datetime.year} ${booking.datetime.time}?`;
+                        selected_appointment = cancelButton;
+                        document.getElementById('confirm_button').disabled = '';
+                    });
+
+                    col.appendChild(cancelButton);
+                    row.appendChild(col);
+                    booking_container.appendChild(row);
+
+                    history_container.appendChild(booking_container);
                 }
             }
 
@@ -235,6 +293,30 @@
             }
 
             newsletter_init();
+        }
+
+        async function cancel_appointment() {
+            const body = {
+                id: selected_appointment.dataset.id
+            };
+            const booking_response = await fetchData('reject_booking', 'PATCH', body);
+            const cancel_button = document.getElementById('cancel_button');
+            if (booking_response.status == 200) {
+                const appointment_info = document.getElementById('appointment_info');
+                appointment_info.innerHTML = 'Your appointment successfully canceled!';
+                document.getElementById('confirm_button').remove();
+                document.getElementById('modal_footer').style.justifyContent  = 'center';
+                cancel_button.classList.remove('btn-danger');
+                cancel_button.classList.add('btn-success');
+                cancel_button.innerHTML = 'Next';
+                cancel_button.addEventListener('click', function() {
+                    window.location.reload();
+                });
+            } else {
+                document.getElementById('confirm_button').disabled = 'disabled';
+                const appointment_info = document.getElementById('appointment_info');
+                appointment_info.innerHTML = booking_response.data.detail;
+            }
         }
     </script>
 </body>
