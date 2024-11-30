@@ -73,35 +73,30 @@
                         <label for="iin_input">IIN</label>
                         <input id="iin_input" type="number" class="form-control" placeholder="">
                     </div>
-                    <p align="left" id="iin_error_text" style="color: red;"></p>
                 </div>
                 <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.6s">
                     <div class="team-item position-relative rounded overflow-hidden">
                         <label for="name_input">Name</label>
                         <input id="name_input" type="text" class="form-control" placeholder="">
                     </div>
-                    <p align="left" id="name_error_text" style="color: red;"></p>
                 </div>
                 <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.9s">
                     <div class="team-item position-relative rounded overflow-hidden">
                         <label for="surname_input">Surname</label>
                         <input id="surname_input" type="text" class="form-control" placeholder="">
                     </div>
-                    <p align="left" id="surname_error_text" style="color: red;"></p>
                 </div>
                 <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="1.2s">
                     <div class="team-item position-relative rounded overflow-hidden">
                         <label for="telephone_input">Telephone</label>
                         <input id="telephone_input" type="number" class="form-control" placeholder="87771234455">
                     </div>
-                    <p align="left" id="telephone_error_text" style="color: red;"></p>
                 </div>
                 <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="1.5s">
                     <div class="team-item position-relative rounded overflow-hidden">
                         <label for="email_input">Email</label>
                         <input id="email_input" type="email" class="form-control" placeholder="example@example.com">
                     </div>
-                    <p align="left" id="email_error_text" style="color: red;"></p>
                 </div>
                 <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="1.8s">
                     <div class="team-item position-relative rounded overflow-hidden">
@@ -109,7 +104,14 @@
                         <input id="password_input" type="password" class="form-control " placeholder="">
                     </div>
                 </div>
-                <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="2.1s">
+				<div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="1.8s">
+                    <p align="left" id="iin_error_text" style="color: red;"></p>
+					<p align="left" id="name_error_text" style="color: red;"></p>
+					<p align="left" id="surname_error_text" style="color: red;"></p>
+					<p align="left" id="telephone_error_text" style="color: red;"></p>
+					<p align="left" id="email_error_text" style="color: red;"></p>
+                </div>
+                <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="0.2s">
                     <button id="registration_button" class="btn btn-primary" style="width: 100%; margin-top: 10px" disabled onclick="register()">Register</button>
                 </div>
             </div>
@@ -353,29 +355,26 @@
                 if (register_response.data.field == 'iin') {
                     const iin_input = document.getElementById('iin_input');
                     iin_input.dataset.is_valid = false;
-                    iin_input.style.color = 'red';
-                    iin_input.style.border = '1px solid red';
+                    iin_input.style.border = '2px solid red';
 
                     const iin_error_text = document.getElementById('iin_error_text');
-                    iin_error_text.innerHTML = 'This iin is already taken!';
+                    iin_error_text.innerHTML = 'This IIN is already registered';
                 }
                 if (register_response.data.field == 'email') {
                     const email_input = document.getElementById('email_input');
                     email_input.dataset.is_valid = false;
-                    email_input.style.color = 'red';
-                    email_input.style.border = '1px solid red';
+                    email_input.style.border = '2px solid red';
 
                     const email_error_text = document.getElementById('email_error_text');
-                    email_error_text.innerHTML = 'This email is already taken!';
+                    email_error_text.innerHTML = 'This email is already registered';
                 }
                 if (register_response.data.field == 'telephone') {
                     const telephone_input = document.getElementById('telephone_input');
                     telephone_input.dataset.is_valid = false;
-                    telephone_input.style.color = 'red';
-                    telephone_input.style.border = '1px solid red';
+                    telephone_input.style.border = '2px solid red';
 
                     const telephone_error_text = document.getElementById('telephone_error_text');
-                    telephone_error_text.innerHTML = 'This telephone is already taken!';
+                    telephone_error_text.innerHTML = 'This telephone is already registered';
                 }
             }
         }
