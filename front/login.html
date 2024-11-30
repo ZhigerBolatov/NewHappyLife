@@ -183,8 +183,7 @@
             const iin_input = document.getElementById('iin_input');
             iin_input.addEventListener('input', function() {
                 if (this.value.length < 12) {
-                    this.style.color = 'red';
-                    this.style.border = '1px solid red';
+                    this.style.border = '2px solid red';
                 } else if (this.value.length > 12) {
                     this.value = this.value.slice(0, 12);
                 } else {
