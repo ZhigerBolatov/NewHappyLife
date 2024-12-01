@@ -1,6 +1,5 @@
 from django.urls import path
 from .views import *
-from .consumers import *
 
 
 urlpatterns = [
@@ -24,8 +23,5 @@ urlpatterns = [
     path('statistics', StatisticsApiView.as_view()),
     path('doctor_register', DoctorRegistrationApiView.as_view()),
     path('schedule', ScheduleApiView.as_view()),
-]
-
-websocket_urlpatterns = [
-    path('ws/chat/', OpenAIConsumer.as_asgi()),  # WebSocket URL
+    path('chat', OpenAIChatAPIView.as_view()),
 ]

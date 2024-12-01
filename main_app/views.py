@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 import os
+from openai import OpenAI
 from datetime import timedelta
 
 from .serializers import *
@@ -468,10 +469,36 @@ class ScheduleApiView(APIView):
         return Response(data=data, status=status.HTTP_200_OK)
 
 
+class OpenAIChatAPIView(APIView):
+    permission_classes = [IsDoctor]
+
+    def post(self, request):
+        message = request.data.get('message')
+        return Response({"message": message}, status=status.HTTP_200_OK)
+        client = OpenAI(
+            api_key=os.environ.get("OPENAI_API_KEY"),  # This is the default and can be omitted
+        )
+
+        chat_completion = client.chat.completions.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": "Say this is a test",
+                }
+            ],
+            model="gpt-4o-mini",
+        )
+
+        print(chat_completion.choices[0])
+        answer = chat_completion.choices[0].text.strip()
+        return Response({"answer": answer}, status=status.HTTP_200_OK)
+
+
 class AuthAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
+        # return Response(data={'is_authenticated': True, 'role': 'DC'}, status=status.HTTP_200_OK)
         if request.user and request.user.is_authenticated:
             return Response(data={'is_authenticated': True, 'role': request.user.role}, status=status.HTTP_200_OK)
         return Response(data={'is_authenticated': False, 'role': None}, status=status.HTTP_200_OK)

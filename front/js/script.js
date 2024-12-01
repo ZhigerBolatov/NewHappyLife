@@ -175,6 +175,7 @@ async function load_auth_route() {
                     {href: 'doctor_history.html', text: 'History'},
                     {href: 'doctor_appointments.html', text: 'Appointments'},
                     {href: 'doctor_schedule.html', text: 'Schedule'},
+                    {href: 'doctors_assistant.html', text: 'Assistant'},
                     {href: 'doctor_statistics.html', text: 'Statistics'},
                 ];
             } else if (is_authenticated_response.data.role == 'AD') {

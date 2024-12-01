@@ -6,23 +6,21 @@
 <body>
     <h1>Chat with OpenAI</h1>
     <input id="user_input" type="text" placeholder="Type a message...">
-    <button onclick="sendMessage()">Send</button>
+    <button onclick="sendMessage(this.value)">Send</button>
     <div id="chat"></div>
 
     <script>
-        const chatSocket = new WebSocket('wss://' + window.location.host + '/ws/chat/');
+        const roomName = 'lobby';
+        const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomName}/`);
 
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            document.getElementById('chat').innerHTML += "<p>Bot: " + data.message + "</p>";
+        chatSocket.onmessage = function(event) {
+            const message = event.data;
+            console.log('Received message:', message);
         };
 
-        function sendMessage() {
-            const message = document.getElementById('user_input').value;
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
+        function sendMessage(message) {
+            chatSocket.send(message);
         }
-    </script>
+</script>
 </body>
 </html>
