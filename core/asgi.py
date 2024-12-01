@@ -14,7 +14,7 @@ from channels.auth import AuthMiddlewareStack
 from django.urls import path
 from main_app.consumers import OpenAIConsumer  # Import your WebSocket consumer
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'openai_project.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
 
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
