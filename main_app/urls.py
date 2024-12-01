@@ -20,4 +20,7 @@ urlpatterns = [
     path('booking_history', HistoryApiView.as_view()),
     path('reject_booking', RejectBookingApiView.as_view()),
     path('accept_booking', AcceptBookingApiView.as_view()),
+    path('statistics', StatisticsApiView.as_view()),
+    path('doctor_register', DoctorRegistrationApiView.as_view()),
+    path('schedule', ScheduleApiView.as_view()),
 ]

@@ -65,13 +65,13 @@
     <div class="container-xxl py-5">
         <div class="row d-flex justify-content-center align-items-center h-100">
             <nav class="navbar navbar-expand-lg bg-body-tertiary">
-              <div class="container-fluid">
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                  <ul id="cabinet_nav" class="navbar-nav me-auto mb-2 mb-lg-0" style="margin-left: auto; margin-right: auto">
+                <div class="container-fluid">
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul id="cabinet_nav" class="navbar-nav me-auto mb-2 mb-lg-0" style="margin-left: auto; margin-right: auto">
 
-                  </ul>
+                        </ul>
+                    </div>
                 </div>
-              </div>
             </nav>
 
             <div class="col col-lg-10 mb-4 mb-lg-0">
@@ -105,6 +105,27 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" align="center" id="exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Your Appointment</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" align="left" id="appointment_info" style="color: black;">
+
+                </div>
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea" style="height: 100px; width: 90%; margin-bottom: 10px;"></textarea>
+                </div>
+                <div class="modal-footer" id="modal_footer">
+                    <button id="cancel_button" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="confirm_button" type="button" class="btn btn-danger" onclick="reject_appointment()">Submit</button>
                 </div>
             </div>
         </div>
@@ -196,19 +217,19 @@
                 window.location.href = 'login.html';
             }
 
-            const user_link = document.getElementById('user_link');
-            if (user_link.dataset.is_authenticated == 'true') {
-                user_link.href = '';
-                user_link.innerHTML = 'Log Out<i class="fa fa-arrow-up ms-3"></i>';
-                user_link.onclick = logout;
-            }
-
             const today = new Date();
             const date = String(today.getDate()).padStart(2, '0');
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const year = today.getFullYear();
             const full_date = `${year}-${month}-${date}`;
             document.getElementById('date_filter').value = full_date;
+
+            const user_link = document.getElementById('user_link');
+            if (user_link.dataset.is_authenticated == 'true') {
+                user_link.href = '';
+                user_link.innerHTML = 'Log Out<i class="fa fa-arrow-up ms-3"></i>';
+                user_link.onclick = logout;
+            }
 
             date_filter.addEventListener('change', function() {
                 submit_filter_button.disabled = '';
@@ -295,7 +316,24 @@
                     col = document.createElement('div');
                     col.classList.add('col-11', 'mb-3');
                     col.align = 'right';
-                    col.innerHTML = `<button id="accept_booking_button_${booking.id}" class="btn btn-primary" onclick="accept_booking(${booking.id})">Done Appointment</button>`;
+
+                    const reject_button = document.createElement('button');
+                    reject_button.id = `accept_booking_button_${booking.id}`;
+                    reject_button.classList.add('btn', 'btn-danger');
+                    reject_button.innerHTML = 'Reject Appointment';
+                    reject_button.setAttribute('data-bs-toggle', 'modal');
+                    reject_button.setAttribute('data-bs-target', '#exampleModal');
+                    reject_button.addEventListener('click', function() {
+                        selected_appointment = booking;
+                        document.getElementById('confirm_button').hidden = false;
+                        cancel_button.classList.remove('btn-success');
+                        cancel_button.classList.add('btn-secondary');
+                        appointment_info.innerHTML = 'Are you sure reject appointment ';
+                        appointment_info.innerHTML += `<b>${booking.patient.name} ${booking.patient.surname} ${booking.patient.iin}</b>`;
+                        appointment_info.innerHTML += ` at <b>${booking.datetime.date}-${booking.datetime.month}-${booking.datetime.year} ${booking.datetime.time}</b>?`;
+                    });
+                    col.appendChild(reject_button);
+
                     row.appendChild(col);
                     booking_container.appendChild(row);
                     history_container.appendChild(booking_container);
@@ -303,19 +341,27 @@
             }
         }
 
-        async function accept_booking(appointment_id) {
+        async function reject_appointment() {
             const body = {
-                id: appointment_id
-            }
-            const accept_booking_response = await fetchData('accept_booking', 'PATCH', body);
-            if (accept_booking_response.status == 200) {
-                const accept_booking_button = document.getElementById(`accept_booking_button_${appointment_id}`);
-                accept_booking_button.innerHTML = 'Success!';
-                accept_booking_button.classList.remove('btn-primary');
-                accept_booking_button.classList.add('btn-success');
-                setTimeout(function () {
+                id: selected_appointment.id,
+                description: document.getElementById('floatingTextarea').value
+            };
+            const booking_response = await fetchData('reject_booking', 'PATCH', body);
+            const cancel_button = document.getElementById('cancel_button');
+            if (booking_response.status == 200) {
+                const appointment_info = document.getElementById('appointment_info');
+                appointment_info.innerHTML = 'Appointment successfully canceled!';
+                document.getElementById('confirm_button').hidden = true;
+                cancel_button.classList.remove('btn-secondary');
+                cancel_button.classList.add('btn-success');
+                cancel_button.innerHTML = 'Next';
+                cancel_button.addEventListener('click', function() {
                     get_content();
-                }, 1000);
+                });
+            } else {
+                document.getElementById('confirm_button').disabled = 'disabled';
+                const appointment_info = document.getElementById('appointment_info');
+                appointment_info.innerHTML = booking_response.data.detail;
             }
         }
     </script>

@@ -30,6 +30,18 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            /* display: none; <- Crashes Chrome on hover */
+            -webkit-appearance: none;
+            margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+        }
+
+        input[type=number] {
+            -moz-appearance:textfield; /* Firefox */
+        }
+    </style>
 </head>
 
 <body onload="preload()">
@@ -62,68 +74,98 @@
     </nav>
     <!-- Navbar End -->
 
-    <div class="container-xxl py-5" style="padding: 0px !important; width: 100vw; max-width: 2560px;">
+    <div class="container-xxl py-5" style="padding: 0px !important">
+        <div class="row">
+            <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <div class="container-fluid">
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul id="cabinet_nav" class="navbar-nav me-auto mb-2 mb-lg-0" style="margin-left: auto; margin-right: auto">
+
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
         <div class="row" style="background-image: url('img/login.png'); background-size: 100% ;">
-            <div class="row d-flex justify-content-left align-items-center h-100">
-                <div class="col col-lg-6" style="margin-top: 12px">
-                    <div class="row d-flex justify-content-center align-items-center h-100" style="height: 90vh !important">
-                        <div class="col col-lg-10 mb-4 mb-lg-0">
-                            <div class="card mb-3" style="border-radius: .5rem;">
-                                <div class="col-md-11 gradient-custom text-center text-white"
-                                     style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
-                                    <div class="row g-0" style="padding-top: 24px; padding-bottom: 24px;">
-                                        <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px; margin-top: 24px !important; margin-bottom: 6px !important">
-                                            <h1>Registration</h1>
-                                        </div>
-                                        <div class="col-md-11 gradient-custom text-left"
-                                             style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
-                                            <div class="col-md-12" align="left" style="margin-top: 20px; margin-bottom: 20px;">
-                                                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.2s" style="margin-bottom: 12px">
-                                                    <div class="team-item position-relative rounded overflow-hidden">
-                                                        <label class="text-muted" for="iin_input">IIN</label>
-                                                        <input id="iin_input" type="number" class="form-control" placeholder="123456789012">
+            <div class="col col-lg-6" style="margin-top: 12px">
+                <div class="row d-flex justify-content-left align-items-center h-100">
+                    <div class="col col-lg-10 mb-4 mb-lg-0">
+                        <div class="card mb-3" style="border-radius: .5rem;">
+                            <div class="col-md-11 gradient-custom text-center text-white"
+                                 style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
+                                <div class="row g-0">
+                                    <div class="col-md-11 gradient-custom text-center text-white"
+                                         style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
+                                        <div class="col-md-12" style="margin-top: 20px; margin-bottom: 20px;">
+                                            <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.3s">
+                                                <div class="team-item position-relative rounded overflow-hidden" align="left">
+                                                    <label class="text-muted" for="iin_input">IIN</label>
+                                                    <input id="iin_input" type="number" class="form-control" placeholder="123456789012">
+                                                </div>
+                                                <p align="left" id="iin_error_text" style="color: red;"></p>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.6s">
+                                                <div class="team-item position-relative rounded overflow-hidden" align="left">
+                                                    <label class="text-muted" for="name_input">Name</label>
+                                                    <input id="name_input" type="text" class="form-control" placeholder="Example">
+                                                </div>
+                                                <p align="left" id="name_error_text" style="color: red;"></p>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.9s">
+                                                <div class="team-item position-relative rounded overflow-hidden" align="left">
+                                                    <label class="text-muted" for="surname_input">Surname</label>
+                                                    <input id="surname_input" type="text" class="form-control" placeholder="Example">
+                                                </div>
+                                                <p align="left" id="surname_error_text" style="color: red;"></p>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="1.2s">
+                                                <div class="team-item position-relative rounded overflow-hidden" align="left">
+                                                    <label class="text-muted" for="telephone_input">Telephone</label>
+                                                    <input id="telephone_input" type="number" class="form-control" placeholder="81234567890">
+                                                </div>
+                                                <p align="left" id="telephone_error_text" style="color: red;"></p>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="1.5s">
+                                                <div class="team-item position-relative rounded overflow-hidden" align="left">
+                                                    <label class="text-muted" for="email_input">Email</label>
+                                                    <input id="email_input" type="email" class="form-control" placeholder="example@example.com">
+                                                </div>
+                                                <p align="left" id="email_error_text" style="color: red;"></p>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="1.8s">
+                                                <div class="team-item position-relative rounded overflow-hidden" align="left">
+                                                    <label class="text-muted" for="password_input">Password</label>
+                                                    <input id="password_input" type="password" class="form-control" placeholder="***">
+                                                </div>
+                                                <p align="left" id="password_error_text" style="color: red;"></p>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="2.1s">
+                                                <div class="team-item position-relative rounded overflow-hidden" align="left">
+                                                    <label class="text-muted" for="category_input">Category</label>
+                                                    <select id="category_input" class="form-select">
+                                                        <option selected disabled>Select Category</option>
+                                                    </select>
+                                                </div>
+                                                <p align="left" id="category_error_text" style="color: red;"></p>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="2.1s">
+                                                <div class="row">
+                                                <div class="col-lg-9">
+                                                    <div class="team-item position-relative rounded overflow-hidden" align="left">
+                                                        <label class="text-muted" for="category_input">Image</label>
+                                                        <input type="file" id="image_input" class="form-control" style="background-color: white;">
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.2s" style="margin-bottom: 12px">
-                                                    <div class="team-item position-relative rounded overflow-hidden">
-                                                        <label class="text-muted" for="name_input">Name</label>
-                                                        <input id="name_input" type="text" class="form-control" placeholder="Your Name">
+                                                <div class="col-lg-3 justify-content-center">
+                                                    <img id="image_preview" src="" alt="Image preview" style="display: none; width: 100%; object-fit: cover;">
+                                                </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.2s" style="margin-bottom: 12px">
-                                                    <div class="team-item position-relative rounded overflow-hidden">
-                                                        <label class="text-muted" for="surname_input">Surname</label>
-                                                        <input id="surname_input" type="text" class="form-control" placeholder="Your Surname">
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.2s" style="margin-bottom: 12px">
-                                                    <div class="team-item position-relative rounded overflow-hidden">
-                                                        <label class="text-muted" for="telephone_input">Telephone</label>
-                                                        <input id="telephone_input" type="number" class="form-control" placeholder="87771234455">
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.2s" style="margin-bottom: 12px">
-                                                    <div class="team-item position-relative rounded overflow-hidden">
-                                                        <label class="text-muted" for="email_input">Email</label>
-                                                        <input id="email_input" type="email" class="form-control" placeholder="example@example.com">
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.2s" style="margin-bottom: 12px">
-                                                    <div class="team-item position-relative rounded overflow-hidden">
-                                                        <label class="text-muted" for="password_input">Password</label>
-                                                        <input id="password_input" type="password" class="form-control " placeholder="Your Password">
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.2s" style="margin-bottom: 12px">
-                                                    <p align="left" id="iin_error_text" style="color: red;"></p>
-                                                    <p align="left" id="name_error_text" style="color: red;"></p>
-                                                    <p align="left" id="surname_error_text" style="color: red;"></p>
-                                                    <p align="left" id="telephone_error_text" style="color: red;"></p>
-                                                    <p align="left" id="email_error_text" style="color: red;"></p>
-                                                </div>
-                                                <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="0.2s" style="margin-bottom: 24px !important">
-                                                    <button id="registration_button" class="btn btn-secondary" style="width: 100%; margin-top: 10px" disabled onclick="register()">Register</button>
-                                                </div>
+                                                <p align="left" id="image_error_text" style="color: red;"></p>
+                                            </div>
+                                            <br>
+                                            <br>
+                                            <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="2.1s">
+                                                <button id="registration_button" class="btn btn-secondary" style="width: 100%; margin-top: 10px" disabled onclick="register()">Register</button>
                                             </div>
                                         </div>
                                     </div>
@@ -213,11 +255,30 @@
     <script src="js/script.js"></script>
     <script>
         let inputs = [];
-        const registration_button = document.getElementById('registration_button');
 
         async function preload() {
             load_auth_route();
 
+            document.getElementById('image_input').addEventListener('change', function(event) {
+    const file = event.target.files[0];  // Get the selected file
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            // Set the image source to the FileReader result (base64 encoded image data)
+            const imagePreview = document.getElementById('image_preview');
+            imagePreview.src = e.target.result;
+
+            // Show the image preview
+            imagePreview.style.display = 'block';
+        };
+
+        // Read the selected file as a data URL
+        reader.readAsDataURL(file);
+    }
+});
+
+            const category_input = document.getElementById('category_input');
             const categories_response = await fetchData('categories', 'GET', null);
             if (categories_response.status == 200) {
                 const category_footer_container = document.getElementById('category_footer_container');
@@ -226,6 +287,10 @@
                     if (counter < 5) {
                         category_footer_container.innerHTML += `<a class="btn btn-link" href="doctors.html?category=${category.id}">${category.name}</a>`;
                     }
+                    let option = document.createElement('option');
+                    option.value = category.id;
+                    option.innerHTML = category.name;
+                    category_input.appendChild(option);
                     counter += 1;
                 }
             }
@@ -236,6 +301,7 @@
             const name_input = document.getElementById('name_input');
             const surname_input = document.getElementById('surname_input');
             const password_input = document.getElementById('password_input');
+            const image_input = document.getElementById('image_input');
 
             iin_input.dataset.is_valid = false;
             telephone_input.dataset.is_valid = false;
@@ -243,6 +309,12 @@
             name_input.dataset.is_valid = false;
             surname_input.dataset.is_valid = false;
             password_input.dataset.is_valid = false;
+            category_input.dataset.is_valid = false;
+
+            category_input.addEventListener('change', function() {
+                category_input.dataset.is_valid = true;
+                check_inputs();
+            });
 
             inputs.push(iin_input);
             inputs.push(telephone_input);
@@ -250,13 +322,15 @@
             inputs.push(name_input);
             inputs.push(surname_input);
             inputs.push(password_input);
+            inputs.push(category_input);
 
             iin_input.addEventListener('input', function() {
                 document.getElementById('iin_error_text').innerHTML = '';
 
                 if (this.value.length < 12) {
                     this.dataset.is_valid = false;
-                    this.style.border = '2px solid red';
+                    this.style.color = 'red';
+                    this.style.border = '1px solid red';
                 } else if (this.value.length > 12) {
                     this.value = this.value.slice(0, 12);
                 } else {
@@ -272,7 +346,8 @@
 
                 if (this.value.length < 11) {
                     this.dataset.is_valid = false;
-                    this.style.border = '2px solid red';
+                    this.style.color = 'red';
+                    this.style.border = '1px solid red';
                 } else if (this.value.length > 11) {
                     this.value = this.value.slice(0, 11);
                 } else {
@@ -288,7 +363,8 @@
 
                 if (!validate_email(this.value)) {
                     this.dataset.is_valid = false;
-                    this.style.border = '2px solid red';
+                    this.style.color = 'red';
+                    this.style.border = '1px solid red';
                 } else {
                     this.dataset.is_valid = true;
                     this.style.color = 'black';
@@ -300,7 +376,8 @@
             name_input.addEventListener('input', function() {
                 if (this.value == '') {
                     this.dataset.is_valid = false;
-                    this.style.border = '2px solid red';
+                    this.style.color = 'red';
+                    this.style.border = '1px solid red';
                 } else {
                     this.dataset.is_valid = true;
                     this.style.color = 'black';
@@ -312,7 +389,8 @@
             surname_input.addEventListener('input', function() {
                 if (this.value == '') {
                     this.dataset.is_valid = false;
-                    this.style.border = '2px solid red';
+                    this.style.color = 'red';
+                    this.style.border = '1px solid red';
                 } else {
                     this.dataset.is_valid = true;
                     this.style.color = 'black';
@@ -324,7 +402,8 @@
             password_input.addEventListener('input', function() {
                 if (this.value == '') {
                     this.dataset.is_valid = false;
-                    this.style.border = '2px solid red';
+                    this.style.color = 'red';
+                    this.style.border = '1px solid red';
                 } else {
                     this.dataset.is_valid = true;
                     this.style.color = 'black';
@@ -338,6 +417,7 @@
 
         function check_inputs() {
             let is_valid = true;
+            const registration_button = document.getElementById('registration_button');
             for (let input of inputs) {
                 if (input.dataset.is_valid == 'false') {
                     is_valid = false;
@@ -345,58 +425,60 @@
                 }
             }
             if (is_valid) {
-                registration_button.classList.remove('btn-secondary');
-                registration_button.classList.add('btn-primary');
                 registration_button.disabled = '';
+                registration_button.classList.remove('btn-secondary');
+                registration_button.classList.add('btn-success');
             } else {
-                registration_button.classList.add('btn-secondary');
-                registration_button.classList.remove('btn-primary');
                 registration_button.disabled = 'disabled';
             }
         }
 
         async function register() {
             const registration_button = document.getElementById('registration_button');
-            registration_button.disabled = 'disabled';
+            //registration_button.disabled = 'disabled';
             registration_button.innerHTML = 'Processing...';
 
-            let body = {};
+            const body = new FormData();
             for (let input of inputs) {
-                body[String(input.id).toLowerCase().replace('_input', '')] = input.value;
+                body.append(String(input.id).toLowerCase().replace('_input', ''), input.value);
             }
-            const register_response = await fetchData('register', 'POST', body);
+            body.append('photo', document.getElementById('image_input').files[0]);
+            const register_response = await fetchData('doctor_register', 'POST', body, 'multipart/form-data');
             if (register_response.status == 200) {
                 registration_button.innerHTML = 'Success!';
                 registration_button.classList.remove('btn-primary');
                 registration_button.classList.add('btn-success');
                 setTimeout(function () {
-                    window.location.href = "login.html";
-                }, 1000);
+                    window.location.reload();
+                }, 1500);
             } else {
                 registration_button.innerHTML = 'Register';
                 if (register_response.data.field == 'iin') {
                     const iin_input = document.getElementById('iin_input');
                     iin_input.dataset.is_valid = false;
-                    iin_input.style.border = '2px solid red';
+                    iin_input.style.color = 'red';
+                    iin_input.style.border = '1px solid red';
 
                     const iin_error_text = document.getElementById('iin_error_text');
-                    iin_error_text.innerHTML = 'This IIN is already registered';
+                    iin_error_text.innerHTML = 'This iin is already taken!';
                 }
                 if (register_response.data.field == 'email') {
                     const email_input = document.getElementById('email_input');
                     email_input.dataset.is_valid = false;
-                    email_input.style.border = '2px solid red';
+                    email_input.style.color = 'red';
+                    email_input.style.border = '1px solid red';
 
                     const email_error_text = document.getElementById('email_error_text');
-                    email_error_text.innerHTML = 'This email is already registered';
+                    email_error_text.innerHTML = 'This email is already taken!';
                 }
                 if (register_response.data.field == 'telephone') {
                     const telephone_input = document.getElementById('telephone_input');
                     telephone_input.dataset.is_valid = false;
-                    telephone_input.style.border = '2px solid red';
+                    telephone_input.style.color = 'red';
+                    telephone_input.style.border = '1px solid red';
 
                     const telephone_error_text = document.getElementById('telephone_error_text');
-                    telephone_error_text.innerHTML = 'This telephone is already registered';
+                    telephone_error_text.innerHTML = 'This telephone is already taken!';
                 }
             }
         }

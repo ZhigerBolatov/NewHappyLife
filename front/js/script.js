@@ -1,26 +1,34 @@
 const backEndUrl = 'https://happylifes.org:8000/';
 //const backEndUrl = 'http://127.0.0.1:8000/';
 
-async function fetchData(url, method, body) {
+async function fetchData(url, method, body, content_type = 'application/json') {
     let response = null;
+    let headers = {};
+    if (content_type == 'multipart/form-data') {
+        headers = {
+            'X-CSRFToken': getCookie('csrftoken')
+        };
+    } else {
+        headers = {
+            'Content-Type': content_type,
+            'X-CSRFToken': getCookie('csrftoken')
+        };
+        if (body !== null) {
+            body = JSON.stringify(body);
+        }
+    }
     if (body !== null) {
         response = await fetch(backEndUrl + url, {
             method: method,
             credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-            body:JSON.stringify(body)
+            headers: headers,
+            body: body
         });
     } else {
         response = await fetch(backEndUrl + url, {
             method: method,
             credentials: 'include',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken')
-            }
+            headers: headers
         });
     }
     const data = await response.json();
@@ -167,6 +175,15 @@ async function load_auth_route() {
                     {href: 'doctor_history.html', text: 'History'},
                     {href: 'doctor_appointments.html', text: 'Appointments'},
                     {href: 'doctor_schedule.html', text: 'Schedule'},
+                    {href: 'doctor_statistics.html', text: 'Statistics'},
+                ];
+            } else if (is_authenticated_response.data.role == 'AD') {
+                cabinet_routing = [
+                    {href: 'cabinet.html', text: 'Profile'},
+                    {href: 'admin_appointments.html', text: 'Appointments'},
+                    {href: 'doctor_register.html', text: 'Register Doctor'},
+                    {href: 'admin_schedule.html', text: 'Schedules'},
+                    {href: 'admin_statistics.html', text: 'Statistics'},
                 ];
             }
             for (let route of cabinet_routing) {

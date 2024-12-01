@@ -76,36 +76,114 @@
 
             <div class="col col-lg-10 mb-4 mb-lg-0">
                 <div class="card mb-3" style="border-radius: .5rem;">
-                    <div class="row g-0">
-                        <div class="col-md-4 gradient-custom text-center text-white" style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
-                            <img src="img/user.png" id="user_photo" alt="Avatar" class="img-fluid my-5" style="width: 150px;" />
-                            <h5 id="user_name"></h5>
-                            <p id="user_category" class="text-muted"></p>
+                    <div class="col-md-11 gradient-custom text-center text-white"
+                             style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
+                        <div class="col-md-12 border rounded" style="margin-top: 20px; margin-bottom: 20px; background-color: #C7DCFB; border-color: black !important">
+                            <h5 style="margin: 20px; border-bottom: 1px solid gray">Search By Date</h5>
+                            <div class="row gx-5" align="left" style="margin-left: 20px;">
+                                <div class="col-3 mb-3">
+                                    <h6>Select Date</h6>
+                                    <input id="date_filter" class="form-control" type="date">
+                                </div>
+                                <div class="col-9 mb-3">
+                                    <div class="row gx-5" align="left" style="margin-left: 20px;">
+                                        <div class="col-12 mb-3">
+                                            <h6>All Appointments</h6>
+                                            <p class="text-muted" id="day_all">0</p>
+                                        </div>
+                                        <div class="col-4 mb-3">
+                                            <h6 style="color: green">Accepted</h6>
+                                            <p class="text-muted" id="day_accepted">0</p>
+                                        </div>
+                                        <div class="col-4 mb-3">
+                                            <h6 style="color: red">Rejected</h6>
+                                            <p class="text-muted" id="day_rejected">0</p>
+                                        </div>
+                                        <div class="col-4 mb-3">
+                                            <h6 style="color: #0463FA">Done</h6>
+                                            <p class="text-muted" id="day_done">0</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-8">
-                            <div class="card-body p-4">
-                                <h6>Information</h6>
-                                <hr class="mt-0 mb-4">
-                                <div class="row pt-1">
-                                    <div class="col-6 mb-3">
-                                        <h6>Email</h6>
-                                        <p id="user_email" class="text-muted"></p>
+                    </div>
+
+                    <div class="row g-0">
+                        <div class="col-md-11 gradient-custom text-center text-white"
+                             style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
+                            <div class="col-md-12 border rounded" style="margin-top: 20px; margin-bottom: 20px;">
+                                <h5 style="margin: 20px; border-bottom: 1px solid gray">All Time</h5>
+                                <div class="row gx-5" align="left" style="margin-left: 20px;">
+                                    <div class="col-3 mb-3">
+                                        <h6>All Appointments</h6>
+                                        <p class="text-muted" id="all_all"></p>
                                     </div>
-                                    <div class="col-6 mb-3">
-                                        <h6>Telephone</h6>
-                                        <p id="user_telephone" class="text-muted"></p>
+                                    <div class="col-3 mb-3">
+                                        <h6 style="color: green">Accepted</h6>
+                                        <p class="text-muted" id="all_accepted"></p>
+                                    </div>
+                                    <div class="col-3 mb-3">
+                                        <h6 style="color: red">Rejected</h6>
+                                        <p class="text-muted" id="all_rejected"></p>
+                                    </div>
+                                    <div class="col-3 mb-3">
+                                        <h6 style="color: #0463FA">Done</h6>
+                                        <p class="text-muted" id="all_done"></p>
                                     </div>
                                 </div>
-                                <div class="row pt-1">
-                                    <div class="col-12 mb-3">
-                                        <h6>IIN</h6>
-                                        <p id="user_iin" class="text-muted"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-0">
+                        <div class="col-md-11 gradient-custom text-center text-white"
+                             style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
+                            <div class="col-md-12 border rounded" style="margin-top: 20px; margin-bottom: 20px;">
+                                <h5 style="margin: 20px; border-bottom: 1px solid gray">Last Week</h5>
+                                <div class="row gx-5" align="left" style="margin-left: 20px;">
+                                    <div class="col-3 mb-3">
+                                        <h6>All Appointments</h6>
+                                        <p class="text-muted" id="week_all"></p>
+                                    </div>
+                                    <div class="col-3 mb-3">
+                                        <h6 style="color: green">Accepted</h6>
+                                        <p class="text-muted" id="week_accepted"></p>
+                                    </div>
+                                    <div class="col-3 mb-3">
+                                        <h6 style="color: red">Rejected</h6>
+                                        <p class="text-muted" id="week_rejected"></p>
+                                    </div>
+                                    <div class="col-3 mb-3">
+                                        <h6 style="color: #0463FA">Done</h6>
+                                        <p class="text-muted" id="week_done"></p>
                                     </div>
                                 </div>
-                                <div class="row pt-1">
-                                    <div class="col-12 mb-3">
-                                        <h6>Address</h6>
-                                        <p id="user_address" class="text-muted"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-0">
+                        <div class="col-md-11 gradient-custom text-center text-white"
+                             style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
+                            <div class="col-md-12 border rounded" style="margin-top: 20px; margin-bottom: 20px;">
+                                <h5 style="margin: 20px; border-bottom: 1px solid gray">Last Month</h5>
+                                <div class="row gx-5" align="left" style="margin-left: 20px;">
+                                    <div class="col-3 mb-3">
+                                        <h6>All Appointments</h6>
+                                        <p class="text-muted" id="month_all"></p>
+                                    </div>
+                                    <div class="col-3 mb-3">
+                                        <h6 style="color: green">Accepted</h6>
+                                        <p class="text-muted" id="month_accepted"></p>
+                                    </div>
+                                    <div class="col-3 mb-3">
+                                        <h6 style="color: red">Rejected</h6>
+                                        <p class="text-muted" id="month_rejected"></p>
+                                    </div>
+                                    <div class="col-3 mb-3">
+                                        <h6 style="color: #0463FA">Done</h6>
+                                        <p class="text-muted" id="month_done"></p>
                                     </div>
                                 </div>
                             </div>
@@ -171,7 +249,6 @@
     </div>
     <!-- Footer End -->
 
-
     <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
 
@@ -192,6 +269,8 @@
     <script src="js/main.js"></script>
     <script src="js/script.js"></script>
     <script>
+        let selected_appointment = null;
+
         async function preload() {
             const user_role = await load_auth_route();
 
@@ -206,24 +285,20 @@
                 user_link.onclick = logout;
             }
 
-            const user_response = await fetchData('user', 'GET', null);
-            if (user_response.status == 200) {
-                const data = user_response.data;
-                document.getElementById('user_name').innerHTML = `${data.name} ${data.surname}`;
-                const user_category = document.getElementById('user_category');
-                if (data.role != null) {
-                    user_category.innerHTML += `${data.role} `;
-                }
-                if (data.category != null) {
-                    user_category.innerHTML += `${data.category}`;
-                }
-                document.getElementById('user_email').innerHTML = data.email;
-                document.getElementById('user_telephone').innerHTML = data.telephone;
-                document.getElementById('user_iin').innerHTML = data.iin;
-                document.getElementById('user_address').innerHTML = data.address;
-                if (data.photo !== null) {
-                    document.getElementById('user_photo').src = backEndUrl + data.photo;
-                }
+            const date_filter = document.getElementById('date_filter');
+            const today = new Date();
+            const date = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            const full_date = `${year}-${month}-${date}`;
+            date_filter.value = full_date;
+            get_day_statistic(date_filter.value);
+            date_filter.addEventListener('change', function() {
+                get_day_statistic(this.value);
+            });
+
+            for (let type of ['all', 'week', 'month']) {
+                get_statistic(type);
             }
 
             const categories_response = await fetchData('categories', 'GET', null);
@@ -239,6 +314,28 @@
             }
 
             newsletter_init();
+        }
+
+        async function get_day_statistic(datetime) {
+            const url = `statistics?type=datetime&datetime=${datetime}`;
+            const statistic_response = await fetchData(url, 'GET', null);
+            if (statistic_response.status == 200) {
+                document.getElementById(`day_all`).innerHTML = statistic_response.data.all;
+                document.getElementById(`day_accepted`).innerHTML = statistic_response.data.accepted;
+                document.getElementById(`day_rejected`).innerHTML = statistic_response.data.rejected;
+                document.getElementById(`day_done`).innerHTML = statistic_response.data.done;
+            }
+        }
+
+        async function get_statistic(type) {
+            const url = `statistics?type=${type}`;
+            const statistic_response = await fetchData(url, 'GET', null);
+            if (statistic_response.status == 200) {
+                document.getElementById(`${type}_all`).innerHTML = statistic_response.data.all;
+                document.getElementById(`${type}_accepted`).innerHTML = statistic_response.data.accepted;
+                document.getElementById(`${type}_rejected`).innerHTML = statistic_response.data.rejected;
+                document.getElementById(`${type}_done`).innerHTML = statistic_response.data.done;
+            }
         }
     </script>
 </body>

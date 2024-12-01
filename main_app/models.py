@@ -109,7 +109,7 @@ class Schedule(models.Model):
 class Booking(models.Model):
     patient = models.ForeignKey('User', related_name='patient_booking', on_delete=models.CASCADE)
     doctor = models.ForeignKey('User', related_name='doctor_booking', on_delete=models.CASCADE)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='AC')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Accepted')
     description = models.TextField(blank=True, null=True)
     datetime = models.DateTimeField()
 

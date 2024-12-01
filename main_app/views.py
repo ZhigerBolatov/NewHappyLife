@@ -18,24 +18,6 @@ from .tasks import *
 from .permissions import *
 
 
-class AuthAPIView(APIView):
-    permission_classes = [AllowAny]
-
-    def get(self, request):
-        if request.user and request.user.is_authenticated:
-            return Response(data={'is_authenticated': True, 'role': request.user.role}, status=status.HTTP_200_OK)
-        return Response(data={'is_authenticated': False, 'role': None}, status=status.HTTP_200_OK)
-
-    def post(self, request):
-        iin = request.data.get('iin')
-        password = request.data.get('password')
-        user = authenticate(request, iin=iin, password=password)
-        if user is None:
-            return Response(data={'success': False}, status=status.HTTP_400_BAD_REQUEST)
-        login(request, user)
-        return Response(data={'success': True, 'role': user.role}, status=status.HTTP_200_OK)
-
-
 class LogOutAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -182,12 +164,25 @@ class DoctorSearchApiView(APIView):
 
 
 class DoctorDetailApiView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminOrReadOnly]
 
     def get(self, request, doctor_id):
         doctor = get_object_or_404(User, id=doctor_id)
         data = UserSerializer(instance=doctor).data
         return Response(data=data, status=status.HTTP_200_OK)
+
+    def patch(self, request, doctor_id):
+        doctor = get_object_or_404(User, id=doctor_id)
+        mutable_data = request.data.copy()
+        if request.data.get('category') == '0':
+            mutable_data['category'] = None
+        if request.data.get('schedule') == '0':
+            mutable_data['schedule'] = None
+        doctor = UserSerializer(instance=doctor, data=mutable_data, partial=True)
+        if doctor.is_valid():
+            doctor.save()
+            return Response(data=doctor.data, status=status.HTTP_200_OK)
+        return Response(data=doctor.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class DoctorScheduleApiView(APIView):
@@ -227,9 +222,28 @@ class BookingApiView(APIView):
             data = BookingSerializer(instance=bookings, many=True).data
         elif request.user.role == 'DC':
             doctor = request.user.id
-            bookings = Booking.objects.filter(doctor=doctor).filter(status='Accepted').order_by('datetime')
+            today = timezone.localtime().date()
+            bookings = Booking.objects.filter(doctor=doctor, datetime=today).filter(status='Accepted').order_by('datetime')
             if 'datetime' in request.GET:
                 bookings = bookings.filter(datetime__icontains=request.GET.get('datetime'))
+            if 'patient' in request.GET:
+                patients = User.objects.filter(role='PT')
+                patients_by_iin = patients.filter(iin__icontains=request.GET.get('patient'))
+                patients_by_name = patients.filter(name__icontains=request.GET.get('patient'))
+                patients_by_surname = patients.filter(surname__icontains=request.GET.get('patient'))
+                patients = patients_by_iin | patients_by_name | patients_by_surname
+                new_bookings = []
+                for booking in bookings:
+                    if booking.patient in patients:
+                        new_bookings.append(booking)
+                bookings = new_bookings
+            data = BookingSerializer(instance=bookings, many=True).data
+        elif request.user.role == 'AD':
+            today = timezone.localtime().date()
+            if 'datetime' in request.GET:
+                bookings = Booking.objects.filter(status='Accepted', datetime__icontains=request.GET.get('datetime'))
+            else:
+                bookings = Booking.objects.filter(status='Accepted', datetime=today).order_by('datetime')
             if 'patient' in request.GET:
                 patients = User.objects.filter(role='PT')
                 patients_by_iin = patients.filter(iin__icontains=request.GET.get('patient'))
@@ -285,18 +299,32 @@ class RejectBookingApiView(APIView):
     permission_classes = [IsAuthenticated]
 
     def patch(self, request):
-        patient = request.user.id
-        booking = Booking.objects.filter(patient=patient).get(id=request.data.get('id'))
-        booking.status = 'Rejected'
-        current_time = timezone.localtime(timezone.now())
-        time_difference = (current_time - booking.datetime).seconds
-        if time_difference < 1800:
-            return Response(data={'success': False,
-                                  'detail': 'You can`t cancel appointment less than 30 minutes in advance.'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        booking.description = f'Appointment rejected by patient at {current_time.strftime('%d-%m-%Y, %H:%M')}'
-        booking.save()
-        return Response(data={'success': True}, status=status.HTTP_200_OK)
+        request.user.role = 'AD'
+        if request.user.role == 'PT':
+            patient = request.user.id
+            booking = Booking.objects.filter(patient=patient).get(id=request.data.get('id'))
+            booking.status = 'Rejected'
+            current_time = timezone.localtime(timezone.now())
+            time_difference = (current_time - booking.datetime).seconds
+            if time_difference < 1800:
+                return Response(data={'success': False,
+                                      'detail': 'You can`t cancel appointment less than 30 minutes in advance.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            booking.description = f'Appointment rejected by patient at {current_time.strftime('%d-%m-%Y, %H:%M')}'
+            booking.save()
+            return Response(data={'success': True}, status=status.HTTP_200_OK)
+        elif request.user.role == 'AD':
+            booking = Booking.objects.get(id=request.data.get('id'))
+            booking.status = 'Rejected'
+            current_time = timezone.localtime(timezone.now())
+            time_difference = (current_time - booking.datetime).seconds
+            if time_difference < 1800:
+                return Response(data={'success': False,
+                                      'detail': 'You can`t cancel appointment less than 30 minutes in advance.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            booking.description = request.data.get('description')
+            booking.save()
+            return Response(data={'success': True}, status=status.HTTP_200_OK)
 
 
 class AcceptBookingApiView(APIView):
@@ -310,13 +338,149 @@ class AcceptBookingApiView(APIView):
         return Response(data={'success': True}, status=status.HTTP_200_OK)
 
 
-# class StatisticsApiView(APIView):
-#     permission_classes = [AllowAny]
-#
-#     def get(self, request):
-#         request.user.id = 1
-#         request.user.role = 'DC'
-#         if request.user.role == 'DC':
-#             datetime = request.GET.get('datetime')
-#             if datetime is not None:
-#
+class StatisticsApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        request.user.role = 'AD'
+        if request.user.role == 'DC':
+            statistics_type = request.GET.get('type')
+            if statistics_type == 'datetime':
+                datetime = request.GET.get('datetime')
+                bookings = Booking.objects.filter(doctor=request.user.id, datetime__icontains=datetime)
+            elif statistics_type == 'week':
+                today = timezone.localtime().date()
+                last_week = timezone.localtime().date() - timedelta(days=7)
+                bookings = Booking.objects.filter(doctor=request.user.id).filter(datetime__lte=today,
+                                                                                 datetime__gte=last_week)
+            elif statistics_type == 'month':
+                today = timezone.localtime().date()
+                last_month = today.replace(day=1) - timedelta(days=1)
+                bookings = Booking.objects.filter(doctor=request.user.id).filter(datetime__lte=today,
+                                                                                 datetime__gte=last_month)
+            else:
+                bookings = Booking.objects.filter(doctor=request.user.id)
+            accepted = len(bookings.filter(status='Accepted'))
+            rejected = len(bookings.filter(status='Rejected'))
+            done = len(bookings.filter(status='Done'))
+            data = {
+                'all': len(bookings),
+                'accepted': accepted,
+                'rejected': rejected,
+                'done': done
+            }
+            return Response(data=data, status=status.HTTP_200_OK)
+        elif request.user.role == 'AD':
+            statistics_type = request.GET.get('type')
+            if statistics_type == 'datetime':
+                datetime = request.GET.get('datetime')
+                bookings = Booking.objects.filter(datetime__icontains=datetime)
+            elif statistics_type == 'week':
+                today = timezone.localtime().date()
+                last_week = timezone.localtime().date() - timedelta(days=7)
+                bookings = Booking.objects.filter(datetime__lte=today, datetime__gte=last_week)
+            elif statistics_type == 'month':
+                today = timezone.localtime().date()
+                last_month = today.replace(day=1) - timedelta(days=1)
+                bookings = Booking.objects.filter(datetime__lte=today, datetime__gte=last_month)
+            else:
+                bookings = Booking.objects.all()
+            doctor_id = request.GET.get('id')
+            if doctor_id is not None:
+                bookings = bookings.filter(doctor=doctor_id)
+            accepted = len(bookings.filter(status='Accepted'))
+            rejected = len(bookings.filter(status='Rejected'))
+            done = len(bookings.filter(status='Done'))
+            data = {
+                'all': len(bookings),
+                'accepted': accepted,
+                'rejected': rejected,
+                'done': done
+            }
+            return Response(data=data, status=status.HTTP_200_OK)
+
+
+class DoctorRegistrationApiView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
+    def post(self, request):
+        check_email = User.objects.filter(email=request.data['email'])
+        if len(check_email) > 0:
+            return Response(data={'success': False, 'field': 'email'}, status=status.HTTP_400_BAD_REQUEST)
+
+        check_telephone = User.objects.filter(telephone=request.data['telephone'])
+        if len(check_telephone) > 0:
+            return Response(data={'success': False, 'field': 'telephone'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.create_user(iin=request.data['iin'], password=request.data['password'])
+        except IntegrityError:
+            return Response(data={'success': False, 'field': 'iin'}, status=status.HTTP_400_BAD_REQUEST)
+
+        multable_query_dict = request.data.copy()
+        multable_query_dict.update({'role': 'DC'})
+        user = UserSerializer(instance=user, data=multable_query_dict, partial=True)
+        if user.is_valid():
+            user.save()
+            return Response(data={'success': True}, status=status.HTTP_200_OK)
+        return Response(data={'success': False, 'detail': user.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ScheduleApiView(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
+    def get(self, request):
+        schedules = Schedule.objects.all()
+        data = ScheduleSerializer(instance=schedules, many=True).data
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        schedule_data = request.data.get('schedule')
+        time_slots_data = request.data.get('time_slots')
+        schedule = get_object_or_404(Schedule, id=schedule_data['id'])
+        schedule = ScheduleSerializer(instance=schedule, data=schedule_data, partial=True)
+        if schedule.is_valid():
+            schedule.save()
+        else:
+            return Response(data=schedule.errors, status=status.HTTP_400_BAD_REQUEST)
+        for item in time_slots_data:
+            if item['id'] != 'null':
+                time_slot = get_object_or_404(TimeSlot, id=item['id'])
+                if item['starts_at'] and item['ends_at']:
+                    time_slot = TimeSlotSerializer(instance=time_slot, data=item)
+                    if time_slot.is_valid():
+                        time_slot.save()
+                    else:
+                        return Response(data=time_slot.errors, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    time_slot.delete()
+            elif item['starts_at'] and item['ends_at']:
+                time_slot = TimeSlotSerializer(data=item)
+                if time_slot.is_valid():
+                    time_slot.save()
+                    schedule = get_object_or_404(Schedule, id=schedule_data['id'])
+                    schedule.time_slots.add(time_slot.data.get('id'))
+                    schedule.save()
+                else:
+                    return Response(data=time_slot.errors, status=status.HTTP_400_BAD_REQUEST)
+        schedule = get_object_or_404(Schedule, id=schedule_data['id'])
+        data = ScheduleSerializer(instance=schedule).data
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class AuthAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        if request.user and request.user.is_authenticated:
+            return Response(data={'is_authenticated': True, 'role': request.user.role}, status=status.HTTP_200_OK)
+        return Response(data={'is_authenticated': False, 'role': None}, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        iin = request.data.get('iin')
+        password = request.data.get('password')
+        user = authenticate(request, iin=iin, password=password)
+        if user is None:
+            return Response(data={'success': False}, status=status.HTTP_400_BAD_REQUEST)
+        login(request, user)
+        return Response(data={'success': True, 'role': user.role}, status=status.HTTP_200_OK)

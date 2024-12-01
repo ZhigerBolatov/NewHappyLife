@@ -30,6 +30,19 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+
+    <style>
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            /* display: none; <- Crashes Chrome on hover */
+            -webkit-appearance: none;
+            margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+        }
+
+        input[type=number] {
+            -moz-appearance:textfield; /* Firefox */
+        }
+    </style>
 </head>
 
 <body onload="preload()">
@@ -62,29 +75,46 @@
     </nav>
     <!-- Navbar End -->
 
-    <div class="container-xxl py-5" style="width: 25vw">
-        <div class="container">
-            <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                <h1>Log In</h1>
-            </div>
-            <div class="bg-light rounded h-100 d-flex align-items-center p-5 row g-3" data-wow-delay="0.1s">
-                <h6 align="center" id="login_error_text" style="color: red;"></h6>
-                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.3s">
-                    <div class="team-item position-relative rounded overflow-hidden">
-                        <input id="iin_input" type="number" class="form-control" placeholder="Your IIN">
+    <div class="container-xxl py-5" style="padding: 0px !important; width: 100vw; max-width: 2560px;">
+        <div class="row" style="background-image: url('img/login.png'); background-size: 100%; width: 100% !important;">
+            <div class="row d-flex justify-content-left align-items-center w-100">
+                <div class="col col-lg-6" style="margin-top: 12px">
+                    <div class="row d-flex justify-content-center align-items-center h-100" style="height: 70vh !important">
+                        <div class="col col-lg-10 mb-4 mb-lg-0">
+                            <div class="card mb-3" style="border-radius: .5rem;">
+                                <div class="col-md-11 gradient-custom text-center text-white"
+                                     style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
+                                    <div class="row g-0">
+                                        <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px; margin-top: 24px !important; margin-bottom: 12px !important">
+                                            <h1>Log In</h1>
+                                        </div>
+                                        <div class="col-md-11 gradient-custom text-center text-white"
+                                             style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
+                                            <div class="col-md-12" style="margin-top: 20px; margin-bottom: 20px;">
+                                                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.3s" style="margin: 12px">
+                                                    <div class="team-item position-relative rounded overflow-hidden">
+                                                        <input id="iin_input" type="number" class="form-control" placeholder="Your IIN">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.6s" style="margin: 12px">
+                                                    <div class="team-item position-relative rounded overflow-hidden">
+                                                        <input id="password_input" type="password" class="form-control " placeholder="Your Password">
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="0.9s">
+                                                    <button id="login_button" class="btn btn-secondary" style="width: 100%; margin-top: 10px" onclick="login()" disabled>Log In</button>
+                                                </div>
+                                                <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="1.2s" align="center">
+                                                    <p class="text-muted" style="margin-top: 10px">Don`t have an account? <a href="register.html">Register now</a></p>
+                                                    <p style="margin-top: 10px"><a href="reset_password.html">Forgot password?</a></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-12 col-md-12 wow fadeInUp" data-wow-delay="0.6s">
-                    <div class="team-item position-relative rounded overflow-hidden">
-                        <input id="password_input" type="password" class="form-control " placeholder="Your Password">
-                    </div>
-                </div>
-                <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="0.9s">
-                    <button id="login_button" class="btn btn-primary" style="width: 100%; margin-top: 10px" onclick="login()">Log In</button>
-                </div>
-                <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="1.2s" align="center">
-                    <p style="margin-top: 10px">Don`t have an account? <a href="register.html">Register now</a></p>
-                    <p style="margin-top: 10px"><a href="reset_password.html">Forgot password?</a></p>
                 </div>
             </div>
         </div>
@@ -166,6 +196,9 @@
     <script src="js/main.js"></script>
     <script src="js/script.js"></script>
     <script>
+        let is_iin_valid = false;
+        let is_password_valid = false;
+
         async function preload() {
             load_auth_route();
             const categories_response = await fetchData('categories', 'GET', null);
@@ -180,15 +213,51 @@
                 }
             }
 
+            const login_button = document.getElementById('login_button');
+
             const iin_input = document.getElementById('iin_input');
             iin_input.addEventListener('input', function() {
                 if (this.value.length < 12) {
                     this.style.border = '2px solid red';
+                    is_iin_valid = false;
                 } else if (this.value.length > 12) {
                     this.value = this.value.slice(0, 12);
                 } else {
                     this.style.color = 'black';
                     this.style.border = '';
+                    is_iin_valid = true;
+                }
+
+                if (is_iin_valid && is_password_valid) {
+                    login_button.classList.remove('btn-secondary');
+                    login_button.classList.add('btn-primary');
+                    login_button.disabled = '';
+                } else {
+                    login_button.classList.remove('btn-primary');
+                    login_button.classList.add('btn-secondary');
+                    login_button.disabled = 'disabled';
+                }
+            });
+
+            const password_input = document.getElementById('password_input');
+            iin_input.addEventListener('input', function() {
+                if (this.value.length < 1) {
+                    this.style.border = '2px solid red';
+                    is_password_valid = false;
+                } else {
+                    this.style.color = 'black';
+                    this.style.border = '';
+                    is_password_valid = true;
+                }
+
+                if (is_iin_valid && is_password_valid) {
+                    login_button.classList.remove('btn-secondary');
+                    login_button.classList.add('btn-primary');
+                    login_button.disabled = '';
+                } else {
+                    login_button.classList.remove('btn-primary');
+                    login_button.classList.add('btn-secondary');
+                    login_button.disabled = 'disabled';
                 }
             });
             newsletter_init();

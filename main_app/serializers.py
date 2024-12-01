@@ -11,6 +11,7 @@ class UserSerializer(ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
+        representation['role'] = ROLE_CHOICES[instance.role].capitalize()
         if instance.category:
             representation['category'] = instance.category.name
         return representation
