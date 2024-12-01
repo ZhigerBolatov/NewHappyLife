@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat with OpenAI Bot</title>
+</head>
+<body>
+    <h1>Chat with OpenAI</h1>
+    <input id="user_input" type="text" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+    <div id="chat"></div>
+
+    <script>
+        // Update the WebSocket connection to use `ws://` for local development
+        const chatSocket = new WebSocket('ws://127.0.0.1:8000/ws/chat/');
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.getElementById('chat').innerHTML += "<p>Bot: " + data.message + "</p>";
+        };
+
+        function sendMessage() {
+            const message = document.getElementById('user_input').value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+        }
+    </script>
+</body>
+</html>
