@@ -10,8 +10,7 @@
     <div id="chat"></div>
 
     <script>
-        // Update the WebSocket connection to use `ws://` for local development
-        const chatSocket = new WebSocket('ws://127.0.0.1:8000/ws/chat/');
+        const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/');
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
