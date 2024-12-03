@@ -424,7 +424,7 @@
                 }
 
                 for (let item of document.getElementsByClassName('carousel-item')) {
-                    let margins = (max_height - item.dataset.height) / 2;
+                    let margins = (max_height - item.dataset.height + 12) / 2;
                     item.style = `margin-top: ${margins}px`;
                 }
 
