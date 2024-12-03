@@ -423,12 +423,12 @@
                     counter += 1;
                 }
 
+                carouselExample.style = `height: ${max_height + 24}px !important`;
+
                 for (let item of document.getElementsByClassName('carousel-item')) {
                     let margins = (max_height - item.dataset.height + 12) / 2;
                     item.style = `margin-top: ${margins}px`;
                 }
-
-                carouselExample.style = `height: ${max_height}px !important`;
             }
 
             const doctors_response = await fetchData('doctors', 'GET', null);
