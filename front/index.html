@@ -158,7 +158,19 @@
                 <p class="d-inline-block border rounded-pill py-1 px-4">Services</p>
                 <h1>Health Care Solutions</h1>
             </div>
-            <div id="category_main_container" class="row g-4"></div>
+            <div id="carouselExample" class="carousel slide bg-secondary rounded">
+                <div class="carousel-inner" id="category_main_container">
+
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
         </div>
     </div>
     <!-- Service End -->
@@ -370,28 +382,52 @@
             const categories_response = await fetchData('categories', 'GET', null);
             if (categories_response.status == 200) {
                 const category_main_container = document.getElementById('category_main_container');
+                const carouselExample = document.getElementById('carouselExample');
                 const category_footer_container = document.getElementById('category_footer_container');
                 let counter = 0;
+                let max_height = 0;
                 for (let category of categories_response.data) {
+                    let carousel_item = document.createElement('div');
+                    carousel_item.classList.add('carousel-item');
+                    carousel_item.align = 'center';
+                    carousel_item.classList.add('active');
+
                     let outer_container = document.createElement('div');
-                    outer_container.classList.add('col-lg-4', 'col-md-6', 'wow', 'fadeInUp');
-                    outer_container.setAttribute('data-wow-delay', '0.1s');
+                    outer_container.classList.add('col-lg-10', 'col-md-10');
 
                     let inner_container = document.createElement('div');
                     inner_container.classList.add('service-item', 'bg-light', 'rounded', 'h-100', 'p-5');
+                    inner_container.style.marginLeft = '24px';
+                    inner_container.style.marginRight = '24px';
 
                     inner_container.innerHTML += `<h4 class="mb-3">${category.name}</h4>`;
                     inner_container.innerHTML += `<p class="mb-4">${category.description}</p>`;
                     inner_container.innerHTML += `<a class="btn" href="doctors.html?category=${category.id}"><i class="fa fa-plus text-primary me-3"></i>Read More</a>`;
 
                     outer_container.appendChild(inner_container);
-                    category_main_container.appendChild(outer_container);
+                    carousel_item.appendChild(outer_container);
+                    category_main_container.appendChild(carousel_item);
+
+                    if (carousel_item.offsetHeight > max_height) {
+                        max_height = carousel_item.offsetHeight;
+                    }
+
+                    if (counter != 0) {
+                        carousel_item.classList.remove('active');
+                    }
 
                     if (counter < 5) {
                         category_footer_container.innerHTML += `<a class="btn btn-link" href="doctors.html?category=${category.id}">${category.name}</a>`;
                     }
                     counter += 1;
                 }
+
+                for (let item of category_main_container.childNodes) {
+                    let margins = (max_height - item.offsetHeight) / 2;
+                    item.style = `margin-top: ${margins}px`;
+                }
+
+                carouselExample.style = `height: ${max_height}px !important`;
             }
 
             const doctors_response = await fetchData('doctors', 'GET', null);
