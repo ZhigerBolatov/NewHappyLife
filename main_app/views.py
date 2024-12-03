@@ -581,7 +581,7 @@ class OpenAIUserChatAPIView(APIView):
                     'you can this links for help user: registration - https://happylifes.org/register.html, '
                     'login - https://happylifes.org/login.html, doctors - https://happylifes.org/doctors.html. '
                     'For make an appointment user must be authenticated. Each doctor have his own page at url '
-                    'http://localhost:63342/HappyLife2/front/doctors_detail.html?doctor=ID (where ID is doctor id '
+                    'https://happylifes.org/doctors_detail.html?doctor=ID (where ID is doctor id '
                     'from data). User can make an appointment at doctors page. All links must be returned as html <a> '
                     'tag. Also, set this link to open a new tab in browser. Data: ' + str(data)
         )
