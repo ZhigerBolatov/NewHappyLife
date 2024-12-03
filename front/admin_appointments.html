@@ -232,7 +232,7 @@
 
             const user_link = document.getElementById('user_link');
             if (user_link.dataset.is_authenticated == 'true') {
-                user_link.href = '';
+
                 user_link.innerHTML = 'Log Out<i class="fa fa-arrow-up ms-3"></i>';
                 user_link.onclick = await logout;
             }

@@ -214,6 +214,6 @@ async function load_auth_route() {
 async function logout() {
     const log_out_response = await fetchData('log_out', 'POST', null);
     if (log_out_response.status == 200) {
-        window.reload();
+        window.location.reload();
     }
 }
