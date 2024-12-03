@@ -121,6 +121,7 @@
                                                     <p align="left" id="surname_error_text" style="color: red;"></p>
                                                     <p align="left" id="telephone_error_text" style="color: red;"></p>
                                                     <p align="left" id="email_error_text" style="color: red;"></p>
+                                                    <p align="left" id="password_error_text" style="color: red;"></p>
                                                 </div>
                                                 <div class="col-lg-12 col-md-6 wow fadeInUp" data-wow-delay="0.2s" style="margin-bottom: 24px !important">
                                                     <button id="registration_button" class="btn btn-secondary" style="width: 100%; margin-top: 10px" disabled onclick="register()">Register</button>
@@ -252,6 +253,19 @@
             inputs.push(surname_input);
             inputs.push(password_input);
 
+            password_input.addEventListener('input', function() {
+                document.getElementById('password_error_text').innerHTML = '';
+                if (password_input.value.length < 6) {
+                    password_input.dataset.is_valid = false;
+                    password_input.style.border = '2px solid red';
+                } else {
+                    password_input.dataset.is_valid = true;
+                    password_input.style.color = 'black';
+                    password_input.style.border = '';
+                }
+                check_inputs();
+            });
+
             iin_input.addEventListener('input', function() {
                 document.getElementById('iin_error_text').innerHTML = '';
 
@@ -311,18 +325,6 @@
             });
 
             surname_input.addEventListener('input', function() {
-                if (this.value == '') {
-                    this.dataset.is_valid = false;
-                    this.style.border = '2px solid red';
-                } else {
-                    this.dataset.is_valid = true;
-                    this.style.color = 'black';
-                    this.style.border = '';
-                }
-                check_inputs();
-            });
-
-            password_input.addEventListener('input', function() {
                 if (this.value == '') {
                     this.dataset.is_valid = false;
                     this.style.border = '2px solid red';

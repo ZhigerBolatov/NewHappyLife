@@ -216,7 +216,7 @@ class NewslettersApiView(APIView):
 
 
 class BookingApiView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         if request.user.role == 'PT':
@@ -260,7 +260,11 @@ class BookingApiView(APIView):
                     if booking.patient in patients:
                         new_bookings.append(booking)
                 bookings = new_bookings
+            if 'doctor' in request.GET:
+                bookings = bookings.filter(doctor=request.GET.get('doctor'))
             data = BookingSerializer(instance=bookings, many=True).data
+        else:
+            data = []
         return Response(data=data, status=status.HTTP_200_OK)
 
     def post(self, request):
@@ -573,7 +577,13 @@ class OpenAIUserChatAPIView(APIView):
             thread_id=thread.id,
             role="user",
             content='I send you json data of our doctors and schedules. Use them for next answers, but dont tell '
-                    'anyone that you using this data' + str(data)
+                    'anyone that you using this data. To make an appointment user must be authenticated. Also, '
+                    'you can this links for help user: registration - https://happylifes.org/register.html, '
+                    'login - https://happylifes.org/login.html, doctors - https://happylifes.org/doctors.html. '
+                    'For make an appointment user must be authenticated. Each doctor have his own page at url '
+                    'http://localhost:63342/HappyLife2/front/doctors_detail.html?doctor=ID (where ID is doctor id '
+                    'from data). User can make an appointment at doctors page. All links must be returned as html <a> '
+                    'tag. Also, set this link to open a new tab in browser. Data: ' + str(data)
         )
 
         run = client.beta.threads.runs.create_and_poll(
@@ -644,6 +654,7 @@ class AuthAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
+        # return Response(data={'is_authenticated': True, 'role': 'AD'}, status=status.HTTP_200_OK)
         if request.user and request.user.is_authenticated:
             return Response(data={'is_authenticated': True, 'role': request.user.role}, status=status.HTTP_200_OK)
         return Response(data={'is_authenticated': False, 'role': None}, status=status.HTTP_200_OK)

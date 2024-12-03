@@ -93,7 +93,10 @@
                                     <div class="col-3 mb-3"></div>
                                     <div class="col-8 mb-3">
                                         <h6>Search By Doctor</h6>
-                                        <input id="doctor_filter" class="form-control" type="text" placeholder="Name, Surname and/or IIN">
+                                        <input id="doctor_filter" class="form-control" list="doctors_list" placeholder="Name, Surname and/or IIN">
+                                        <datalist id="doctors_list">
+                                            <option value="All" data-id="0">
+                                        </datalist>
                                     </div>
                                 </div>
                                 <div class="row gx-5" style="margin-left: 20px;">
@@ -232,7 +235,6 @@
 
             const user_link = document.getElementById('user_link');
             if (user_link.dataset.is_authenticated == 'true') {
-
                 user_link.innerHTML = 'Log Out<i class="fa fa-arrow-up ms-3"></i>';
                 user_link.onclick = await logout;
             }
@@ -252,6 +254,17 @@
                     submit_filter_button.disabled = '';
                 }
             });
+
+            const doctors_list = document.getElementById('doctors_list');
+            const doctors_response = await fetchData('doctors', 'GET', null);
+            if (doctors_response.status == 200) {
+                for (let doctor of doctors_response.data) {
+                    let option = document.createElement('option');
+                    option.value = `${doctor.name} ${doctor.surname} ${doctor.iin}`;
+                    option.dataset.id = doctor.id;
+                    doctors_list.appendChild(option);
+                }
+            }
 
             get_content();
 
@@ -289,7 +302,13 @@
                 params.push(`patient=${patient_filter.value}`);
             }
             if (doctor_filter.value != '') {
-                params.push(`doctor=${doctor_filter.value}`);
+                let selected_doctor_id = null;
+                for (let doctor of doctors_list.childNodes) {
+                    if (doctor.value == doctor_filter.value) {
+                        selected_doctor_id = doctor.dataset.id;
+                    }
+                }
+                params.push(`doctor=${selected_doctor_id}`);
             }
             url += `?${params.join('&')}`;
 
@@ -333,7 +352,13 @@
                     row.align = 'left';
 
                     col = document.createElement('div');
-                    col.classList.add('col-11', 'mb-3');
+                    col.classList.add('col-5', 'mb-3');
+                    col.innerHTML = '<h6>Doctor</h6>';
+                    col.innerHTML += `<p class="text-muted">${booking.doctor.name} ${booking.doctor.surname}<br>${booking.doctor.category}</p>`;
+                    row.appendChild(col);
+
+                    col = document.createElement('div');
+                    col.classList.add('col-6', 'mb-3');
                     col.align = 'right';
 
                     const reject_button = document.createElement('button');

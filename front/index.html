@@ -158,13 +158,10 @@
                 <p class="d-inline-block border rounded-pill py-1 px-4">Services</p>
                 <h1>Health Care Solutions</h1>
             </div>
-            <div id="category_main_container" class="row g-4">
-
-            </div>
+            <div id="category_main_container" class="row g-4"></div>
         </div>
     </div>
     <!-- Service End -->
-
 
     <!-- Feature Start -->
     <div class="container-fluid bg-primary overflow-hidden my-5 px-lg-0">
@@ -402,9 +399,6 @@
                 const doctors_container = document.getElementById('doctors_container');
                 let counter = 0;
                 for (let doctor of doctors_response.data) {
-                    if (counter > 4) {
-                        break;
-                    }
                     let outer_container = document.createElement('div');
                     outer_container.classList.add('col-lg-3', 'col-md-6', 'wow', 'fadeInUp');
                     outer_container.setAttribute('data-wow-delay', '0.7s');
@@ -434,7 +428,6 @@
 
             newsletter_init();
         }
-
     </script>
 </body>
 
