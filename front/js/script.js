@@ -92,7 +92,7 @@ function isTimeBooked(bookings, date) {
     for (let booking of bookings) {
         let datetime = booking.datetime;
         let time = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-        if (datetime.date == date.getDate() && datetime.month == date.getMonth() + 1 && datetime.time == time) {
+        if (datetime.date == date.getDate() && datetime.month == date.getMonth() + 1 && datetime.time == time && booking.status != 'Rejected') {
             return true
         }
     }

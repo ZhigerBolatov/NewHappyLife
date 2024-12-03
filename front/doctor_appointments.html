@@ -56,6 +56,7 @@
                 <a href="service.html" class="nav-item nav-link">Service</a>
                 <a href="doctors.html" class="nav-item nav-link">Doctors</a>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
+                <a href="assistant.html" class="nav-item nav-link">Assistant</a>
             </div>
             <a id="user_link" href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block"></a>
         </div>
@@ -200,7 +201,7 @@
             if (user_link.dataset.is_authenticated == 'true') {
                 user_link.href = '';
                 user_link.innerHTML = 'Log Out<i class="fa fa-arrow-up ms-3"></i>';
-                user_link.onclick = logout;
+                user_link.onclick = await logout;
             }
 
             const today = new Date();
@@ -258,47 +259,68 @@
                 const data = booking_history_response.data;
                 const history_container = document.getElementById('history_container');
                 history_container.innerHTML = '';
-                for (let booking of data) {
-                    const booking_container = document.createElement('div');
-                    booking_container.classList.add('col-md-12', 'border', 'rounded');
-                    booking_container.style.marginTop = '20px';
-                    booking_container.style.marginBottom = '20px';
-                    booking_container.innerHTML = `<h5 style="margin: 20px; border-bottom: 1px solid gray">${booking.datetime.date}-${booking.datetime.month}-${booking.datetime.year} ${booking.datetime.time}</h5>`;
+                if (data.length > 0) {
+                    for (let booking of data) {
+                        const booking_container = document.createElement('div');
+                        booking_container.classList.add('col-md-12', 'border', 'rounded');
+                        booking_container.style.marginTop = '20px';
+                        booking_container.style.marginBottom = '20px';
+                        booking_container.innerHTML = `<h5 style="margin: 20px; border-bottom: 1px solid gray">${booking.datetime.date}-${booking.datetime.month}-${booking.datetime.year} ${booking.datetime.time}</h5>`;
 
-                    let row = document.createElement('div');
-                    row.classList.add('row', 'gx-5');
-                    row.style.marginLeft = '20px';
-                    row.align = 'left';
+                        let row = document.createElement('div');
+                        row.classList.add('row', 'gx-5');
+                        row.style.marginLeft = '20px';
+                        row.align = 'left';
 
-                    let col = document.createElement('div');
-                    col.classList.add('col-5', 'mb-3');
-                    col.innerHTML = '<h6>Patient</h6>';
-                    col.innerHTML += `<p class="text-muted">${booking.patient.name} ${booking.patient.surname}<br>${booking.patient.iin}</p>`;
-                    row.appendChild(col);
+                        let col = document.createElement('div');
+                        col.classList.add('col-5', 'mb-3');
+                        col.innerHTML = '<h6>Patient</h6>';
+                        col.innerHTML += `<p class="text-muted">${booking.patient.name} ${booking.patient.surname}<br>${booking.patient.iin}</p>`;
+                        row.appendChild(col);
 
-                    col = document.createElement('div');
-                    col.classList.add('col-6', 'mb-3');
-                    col.innerHTML = '<h6>Description</h6>';
-                    if (booking.description != '') {
-                        col.innerHTML += `<p class="text-muted">${booking.description}</p>`;
-                    } else {
-                        col.innerHTML += `<p class="text-muted">Empty</p>`;
+                        col = document.createElement('div');
+                        col.classList.add('col-6', 'mb-3');
+                        col.innerHTML = '<h6>Description</h6>';
+                        if (booking.description != '') {
+                            col.innerHTML += `<p class="text-muted">${booking.description}</p>`;
+                        } else {
+                            col.innerHTML += `<p class="text-muted">Empty</p>`;
+                        }
+                        row.appendChild(col);
+                        booking_container.appendChild(row);
+
+                        row = document.createElement('div');
+                        row.classList.add('row', 'gx-5');
+                        row.style.marginLeft = '20px';
+                        row.align = 'left';
+
+                        col = document.createElement('div');
+                        col.classList.add('col-11', 'mb-3');
+                        col.align = 'right';
+                        col.innerHTML = `<button id="accept_booking_button_${booking.id}" class="btn btn-primary" onclick="accept_booking(${booking.id})">Done Appointment</button>`;
+                        row.appendChild(col);
+                        booking_container.appendChild(row);
+                        history_container.appendChild(booking_container);
                     }
-                    row.appendChild(col);
-                    booking_container.appendChild(row);
+                } else {
+                    const booking_container = document.createElement('div');
+                        booking_container.classList.add('col-md-12', 'border', 'rounded');
+                        booking_container.style.marginTop = '20px';
+                        booking_container.style.marginBottom = '20px';
+                        booking_container.innerHTML = ``;
 
-                    row = document.createElement('div');
-                    row.classList.add('row', 'gx-5');
-                    row.style.marginLeft = '20px';
-                    row.align = 'left';
+                        let row = document.createElement('div');
+                        row.classList.add('row', 'gx-5');
+                        row.style.marginLeft = '20px';
+                        row.align = 'left';
 
-                    col = document.createElement('div');
-                    col.classList.add('col-11', 'mb-3');
-                    col.align = 'right';
-                    col.innerHTML = `<button id="accept_booking_button_${booking.id}" class="btn btn-primary" onclick="accept_booking(${booking.id})">Done Appointment</button>`;
-                    row.appendChild(col);
-                    booking_container.appendChild(row);
-                    history_container.appendChild(booking_container);
+                        col = document.createElement('div');
+                        col.classList.add('col-12', 'mb-3');
+                        col.innerHTML = '<h3 align="center">No Data Found</h6>';
+
+                        row.appendChild(col);
+                        booking_container.appendChild(row);
+                        history_container.appendChild(booking_container);
                 }
             }
         }

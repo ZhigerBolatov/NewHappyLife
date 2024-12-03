@@ -56,6 +56,7 @@
                 <a href="service.html" class="nav-item nav-link">Service</a>
                 <a href="doctors.html" class="nav-item nav-link">Doctors</a>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
+                <a href="assistant.html" class="nav-item nav-link">Assistant</a>
             </div>
             <a id="user_link" href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block"></a>
         </div>
@@ -193,19 +194,100 @@
             if (user_link.dataset.is_authenticated == 'true') {
                 user_link.href = '';
                 user_link.innerHTML = 'Log Out<i class="fa fa-arrow-up ms-3"></i>';
-                user_link.onclick = logout;
+                user_link.onclick = await logout;
             }
 
             const booking_history_response = await fetchData('booking_history', 'GET', null);
             if (booking_history_response.status == 200) {
                 const data = booking_history_response.data;
                 const history_container = document.getElementById('history_container');
-                for (let booking of data) {
+                if (data.length > 0) {
+                    for (let booking of data) {
+                        const booking_container = document.createElement('div');
+                        booking_container.classList.add('col-md-12', 'border', 'rounded');
+                        booking_container.style.marginTop = '20px';
+                        booking_container.style.marginBottom = '20px';
+                        booking_container.innerHTML = `<h5 style="margin: 20px; border-bottom: 1px solid gray">${booking.datetime.date}-${booking.datetime.month}-${booking.datetime.year} ${booking.datetime.time}</h5>`;
+
+                        let row = document.createElement('div');
+                        row.classList.add('row', 'gx-5');
+                        row.style.marginLeft = '20px';
+                        row.align = 'left';
+
+                        col = document.createElement('div');
+                        col.classList.add('col-5', 'mb-3');
+                        col.innerHTML = '<h6>Patient</h6>';
+                        col.innerHTML += `<p class="text-muted">${booking.patient.name} ${booking.patient.surname}</p>`;
+                        row.appendChild(col);
+                        booking_container.appendChild(row);
+
+                        row = document.createElement('div');
+                        row.classList.add('row', 'gx-5');
+                        row.style.marginLeft = '20px';
+                        row.align = 'left';
+
+                        col = document.createElement('div');
+                        col.classList.add('col-12', 'mb-3');
+                        col.innerHTML = '<h6>Description</h6>';
+                        if (booking.description != '') {
+                            col.innerHTML += `<p id="booking_description_${booking.id}" class="text-muted">${booking.description}</p>`;
+                        } else {
+                            col.innerHTML += `<p id="booking_description_${booking.id}" class="text-muted">Empty</p>`;
+                        }
+                        row.appendChild(col);
+                        booking_container.appendChild(row);
+                        const booking_description = col;
+
+                        row = document.createElement('div');
+                        row.classList.add('row', 'gx-5');
+                        row.style.marginLeft = '20px';
+                        row.align = 'left';
+
+                        col = document.createElement('div');
+                        col.classList.add('col-12', 'mb-3');
+                        col.innerHTML = '<h6>Status</h6>';
+                        if (booking.status == 'Done') {
+                            col.innerHTML += `<p style="color: green">${booking.status}</p>`;
+                            const change_description_button = document.createElement('button');
+                            change_description_button.classList.add('btn', 'btn-primary');
+                            change_description_button.setAttribute('data-bs-toggle', 'modal');
+                            change_description_button.setAttribute('data-bs-target', '#exampleModal');
+                            change_description_button.innerHTML = 'Edit Description';
+                            change_description_button.addEventListener('click', function() {
+                                selected_appointment = booking;
+
+                                const appointment_info = document.getElementById('appointment_info');
+                                appointment_info.innerHTML = 'Change description for Appointment.<br>Patient:<br>';
+                                appointment_info.innerHTML += `<b>${booking.patient.iin} ${booking.patient.name} ${booking.patient.surname}</b>`;
+                                appointment_info.innerHTML += `<br>Datetime:<br><b>${booking.datetime.date}-${booking.datetime.month}-${booking.datetime.year} ${booking.datetime.time}</b>`;
+
+                                const confirm_button = document.getElementById('confirm_button');
+                                confirm_button.removeAttribute('data-bs-dismiss');
+                                confirm_button.innerHTML = 'Confirm';
+                                confirm_button.disabled = 'disabled';
+
+                                const floatingTextarea = document.getElementById('floatingTextarea');
+                                floatingTextarea.value = booking.description;
+                                floatingTextarea.addEventListener('input', function() {
+                                    confirm_button.disabled = '';
+                                });
+                            });
+
+                            booking_description.appendChild(change_description_button);
+                        } else {
+                            col.innerHTML += `<p style="color: red">${booking.status}</p>`;
+                        }
+                        row.appendChild(col);
+                        booking_container.appendChild(row);
+
+                        history_container.appendChild(booking_container);
+                    }
+                } else {
                     const booking_container = document.createElement('div');
                     booking_container.classList.add('col-md-12', 'border', 'rounded');
                     booking_container.style.marginTop = '20px';
                     booking_container.style.marginBottom = '20px';
-                    booking_container.innerHTML = `<h5 style="margin: 20px; border-bottom: 1px solid gray">${booking.datetime.date}-${booking.datetime.month}-${booking.datetime.year} ${booking.datetime.time}</h5>`;
+                    booking_container.innerHTML = ``;
 
                     let row = document.createElement('div');
                     row.classList.add('row', 'gx-5');
@@ -213,71 +295,11 @@
                     row.align = 'left';
 
                     col = document.createElement('div');
-                    col.classList.add('col-5', 'mb-3');
-                    col.innerHTML = '<h6>Patient</h6>';
-                    col.innerHTML += `<p class="text-muted">${booking.patient.name} ${booking.patient.surname}</p>`;
-                    row.appendChild(col);
-                    booking_container.appendChild(row);
-
-                    row = document.createElement('div');
-                    row.classList.add('row', 'gx-5');
-                    row.style.marginLeft = '20px';
-                    row.align = 'left';
-
-                    col = document.createElement('div');
                     col.classList.add('col-12', 'mb-3');
-                    col.innerHTML = '<h6>Description</h6>';
-                    if (booking.description != '') {
-                        col.innerHTML += `<p id="booking_description_${booking.id}" class="text-muted">${booking.description}</p>`;
-                    } else {
-                        col.innerHTML += `<p id="booking_description_${booking.id}" class="text-muted">Empty</p>`;
-                    }
+                    col.innerHTML = '<h3 align="center">No Data Found</h6>';
+
                     row.appendChild(col);
                     booking_container.appendChild(row);
-                    const booking_description = col;
-
-                    row = document.createElement('div');
-                    row.classList.add('row', 'gx-5');
-                    row.style.marginLeft = '20px';
-                    row.align = 'left';
-
-                    col = document.createElement('div');
-                    col.classList.add('col-12', 'mb-3');
-                    col.innerHTML = '<h6>Status</h6>';
-                    if (booking.status == 'Done') {
-                        col.innerHTML += `<p style="color: green">${booking.status}</p>`;
-                        const change_description_button = document.createElement('button');
-                        change_description_button.classList.add('btn', 'btn-primary');
-                        change_description_button.setAttribute('data-bs-toggle', 'modal');
-                        change_description_button.setAttribute('data-bs-target', '#exampleModal');
-                        change_description_button.innerHTML = 'Edit Description';
-                        change_description_button.addEventListener('click', function() {
-                            selected_appointment = booking;
-
-                            const appointment_info = document.getElementById('appointment_info');
-                            appointment_info.innerHTML = 'Change description for Appointment.<br>Patient:<br>';
-                            appointment_info.innerHTML += `<b>${booking.patient.iin} ${booking.patient.name} ${booking.patient.surname}</b>`;
-                            appointment_info.innerHTML += `<br>Datetime:<br><b>${booking.datetime.date}-${booking.datetime.month}-${booking.datetime.year} ${booking.datetime.time}</b>`;
-
-                            const confirm_button = document.getElementById('confirm_button');
-                            confirm_button.removeAttribute('data-bs-dismiss');
-                            confirm_button.innerHTML = 'Confirm';
-                            confirm_button.disabled = 'disabled';
-
-                            const floatingTextarea = document.getElementById('floatingTextarea');
-                            floatingTextarea.value = booking.description;
-                            floatingTextarea.addEventListener('input', function() {
-                                confirm_button.disabled = '';
-                            });
-                        });
-
-                        booking_description.appendChild(change_description_button);
-                    } else {
-                        col.innerHTML += `<p style="color: red">${booking.status}</p>`;
-                    }
-                    row.appendChild(col);
-                    booking_container.appendChild(row);
-
                     history_container.appendChild(booking_container);
                 }
             }

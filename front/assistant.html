@@ -56,7 +56,7 @@
                 <a href="service.html" class="nav-item nav-link">Service</a>
                 <a href="doctors.html" class="nav-item nav-link">Doctors</a>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
-                <a href="assistant.html" class="nav-item nav-link">Assistant</a>
+                <a href="assistant.html" class="nav-item nav-link active">Assistant</a>
             </div>
             <a id="user_link" href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block"></a>
         </div>
@@ -65,21 +65,23 @@
 
     <div class="container-xxl py-5">
         <div class="row d-flex justify-content-center align-items-center h-100">
-            <nav class="navbar navbar-expand-lg bg-body-tertiary">
-              <div class="container-fluid">
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                  <ul id="cabinet_nav" class="navbar-nav me-auto mb-2 mb-lg-0" style="margin-left: auto; margin-right: auto">
-
-                  </ul>
-                </div>
-              </div>
-            </nav>
-
             <div class="col col-lg-10 mb-4 mb-lg-0">
                 <div class="card mb-3" style="border-radius: .5rem;">
                     <div class="row g-0" id="user_history ">
-                        <div id="history_container" class="col-md-11 gradient-custom text-center text-white"
+                        <div class="col-md-12 gradient-custom text-center"
                              style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
+                            <h4 style="margin: 20px; border-bottom: 1px solid gray">Assistant Chat</h4>
+                            <div id="chat_window" class="overflow-auto border rounded" style="height: 60vh; width: 95%; margin-left:auto; margin-right: auto; overflow-x: hidden !important;">
+
+                            </div>
+                            <div class="row" style="width: 95%; margin-left:auto; margin-right: auto; margin-top: 12px; margin-bottom: 12px">
+                                <div class="col-lg-11" style="padding: 0px !important">
+                                    <input id="message_input" value="Please wait! Assistant is loading..." disabled type="text" class="form-control" placeholder="Input Your Message" style="color: black;">
+                                </div>
+                                <div class="col-lg-1" style="padding: 0px !important">
+                                    <button id="send_message_button" class="btn btn-primary" onclick="send_message()" disabled>Send</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -142,25 +144,7 @@
     </div>
     <!-- Footer End -->
 
-    <div class="modal fade" align="center" id="exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Your Appointment</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="appointment_info" style="color: black;"></div>
-                <div class="modal-footer" id="modal_footer">
-                    <button id="cancel_button" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button id="confirm_button" type="button" class="btn btn-danger" onclick="cancel_appointment()">Confirm</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Back to Top -->
     <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
-
 
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -178,108 +162,21 @@
     <script src="js/main.js"></script>
     <script src="js/script.js"></script>
     <script>
-        let selected_appointment = null;
+        let thread_id = null;
+        const send_message_button = document.getElementById('send_message_button');
+        const message_input = document.getElementById('message_input');
+        const chat_window = document.getElementById('chat_window');
 
         async function preload() {
-            const user_role = await load_auth_route();
-            if (user_role == null) {
-                window.location.href = 'login.html';
-            }
+            load_auth_route();
 
-            const user_link = document.getElementById('user_link');
-            if (user_link.dataset.is_authenticated == 'true') {
-                user_link.href = '';
-                user_link.innerHTML = 'Log Out<i class="fa fa-arrow-up ms-3"></i>';
-                user_link.onclick = await logout;
-            }
+            window.addEventListener('beforeunload', function(event) {
+                delete_chat();
+            });
 
-            const booking_history_response = await fetchData('booking', 'GET', null);
-            if (booking_history_response.status == 200) {
-                const data = booking_history_response.data;
-                const history_container = document.getElementById('history_container');
-                for (let booking of data) {
-                    const booking_container = document.createElement('div');
-                    booking_container.classList.add('col-md-12', 'border', 'rounded');
-                    booking_container.style.marginTop = '20px';
-                    booking_container.style.marginBottom = '20px';
-                    booking_container.innerHTML = `<h5 style="margin: 20px; border-bottom: 1px solid gray">${booking.datetime.date}-${booking.datetime.month}-${booking.datetime.year} ${booking.datetime.time}</h5>`;
-
-                    let row = document.createElement('div');
-                    row.classList.add('row', 'gx-5');
-                    row.style.marginLeft = '20px';
-                    row.align = 'left';
-
-                    let col = document.createElement('div');
-                    col.classList.add('col-5', 'mb-3');
-                    col.innerHTML = '<h6>Category</h6>';
-                    col.innerHTML += `<p class="text-muted">${booking.doctor.category}</p>`;
-                    row.appendChild(col);
-
-                    col = document.createElement('div');
-                    col.classList.add('col-5', 'mb-3');
-                    col.innerHTML = '<h6>Doctor</h6>';
-                    col.innerHTML += `<p class="text-muted">${booking.doctor.name} ${booking.doctor.surname}</p>`;
-                    row.appendChild(col);
-                    booking_container.appendChild(row);
-
-                    row = document.createElement('div');
-                    row.classList.add('row', 'gx-5');
-                    row.style.marginLeft = '20px';
-                    row.align = 'left';
-
-                    col = document.createElement('div');
-                    col.classList.add('col-12', 'mb-3');
-                    col.innerHTML = '<h6>Description</h6>';
-                    if (booking.description != '') {
-                        col.innerHTML += `<p class="text-muted">${booking.description}</p>`;
-                    } else {
-                        col.innerHTML += `<p class="text-muted">Empty</p>`;
-                    }
-                    row.appendChild(col);
-                    booking_container.appendChild(row);
-
-                    row = document.createElement('div');
-                    row.classList.add('row', 'gx-5');
-                    row.style.marginLeft = '20px';
-                    row.align = 'left';
-
-                    col = document.createElement('div');
-                    col.classList.add('col-12', 'mb-3');
-                    col.innerHTML = '<h6>Status</h6>';
-                    col.innerHTML += `<p style="color: green">${booking.status}</p>`;
-
-                    row.appendChild(col);
-                    booking_container.appendChild(row);
-
-                    row = document.createElement('div');
-                    row.classList.add('row', 'gx-5');
-                    row.style.marginLeft = '20px';
-                    row.align = 'right';
-
-                    col = document.createElement('div');
-                    col.classList.add('col-11', 'mb-3');
-
-                    const cancelButton = document.createElement('button');
-                    cancelButton.classList.add('btn', 'btn-danger');
-                    cancelButton.innerHTML = 'Cancel Appointment';
-                    cancelButton.setAttribute('data-bs-toggle', 'modal');
-                    cancelButton.setAttribute('data-bs-target', '#exampleModal');
-                    cancelButton.dataset.id = booking.id;
-                    cancelButton.addEventListener('click', function() {
-                        const appointment_info = document.getElementById('appointment_info');
-                        appointment_info.innerHTML = `Are sure to cancel appointment to ${booking.doctor.category} at `;
-                        appointment_info.innerHTML += `${booking.datetime.date}-${booking.datetime.month}-${booking.datetime.year} ${booking.datetime.time}?`;
-                        selected_appointment = cancelButton;
-                        document.getElementById('confirm_button').disabled = '';
-                    });
-
-                    col.appendChild(cancelButton);
-                    row.appendChild(col);
-                    booking_container.appendChild(row);
-
-                    history_container.appendChild(booking_container);
-                }
-            }
+            message_input.addEventListener('input', function() {
+                send_message_button.disabled = false;
+            });
 
             const categories_response = await fetchData('categories', 'GET', null);
             if (categories_response.status == 200) {
@@ -288,37 +185,108 @@
                 for (let category of categories_response.data) {
                     if (counter < 5) {
                         category_footer_container.innerHTML += `<a class="btn btn-link" href="doctors.html?category=${category.id}">${category.name}</a>`;
+                        break;
                     }
                     counter += 1;
                 }
             }
 
             newsletter_init();
+            create_chat();
         }
 
-        async function cancel_appointment() {
+        async function delete_chat() {
             const body = {
-                id: selected_appointment.dataset.id
+                thread_id: thread_id
             };
-            const booking_response = await fetchData('reject_booking', 'PATCH', body);
-            const cancel_button = document.getElementById('cancel_button');
-            if (booking_response.status == 200) {
-                const appointment_info = document.getElementById('appointment_info');
-                appointment_info.innerHTML = 'Your appointment successfully canceled!';
-                document.getElementById('confirm_button').remove();
-                document.getElementById('modal_footer').style.justifyContent  = 'center';
-                cancel_button.classList.remove('btn-danger');
-                cancel_button.classList.add('btn-success');
-                cancel_button.innerHTML = 'Next';
-                cancel_button.addEventListener('click', function() {
-                    window.location.reload();
+            const chat_response = await fetchData('user_chat', 'DELETE', body);
+        }
+
+        async function create_chat() {
+            const chat_response = await fetchData('user_chat', 'GET', null);
+            if (chat_response.status == 200) {
+                thread_id = chat_response.data.thread_id;
+
+                message_input.disabled = false;
+                message_input.value = '';
+
+                message_input.addEventListener("keyup", function(event) {
+                    if (event.keyCode === 13) {
+                        send_message_button.click();
+                    }
                 });
-            } else {
-                document.getElementById('confirm_button').disabled = 'disabled';
-                const appointment_info = document.getElementById('appointment_info');
-                appointment_info.innerHTML = booking_response.data.detail;
             }
+        }
+
+        async function send_message() {
+            const message_row = document.createElement('div');
+            message_row.classList.add('row');
+
+            const message_col = document.createElement('div');
+            message_col.classList.add('col-5', 'border', 'rounded');
+            message_col.style.marginTop = '12px';
+            message_col.style.paddingTop = '12px';
+            message_col.style.paddingBottom = '12px';
+            message_col.style.verticalAlign = 'middle';
+            message_col.style.backgroundColor = '#0463FA';
+            message_col.style.color = 'white';
+            message_col.style.width = '55%';
+            message_col.align = 'left';
+            message_col.innerHTML = message_input.value;
+
+            let empty_col = document.createElement('div');
+            empty_col.classList.add('col-5');
+
+            message_input.value = 'Waiting answer...';
+            message_input.disabled = true;
+            send_message_button.disabled = true;
+            message_row.appendChild(empty_col);
+            message_row.appendChild(message_col);
+            chat_window.appendChild(message_row);
+            scrollToBottom();
+
+            const body = {
+                message: message_col.innerHTML,
+                thread_id: thread_id
+            }
+            const chat_response = await fetchData('user_chat', 'POST', body);
+            if (chat_response.status == 200) {
+                message_input.value = '';
+                message_input.disabled = false;
+
+                const answer_row = document.createElement('div');
+                answer_row.classList.add('row');
+
+                const answer_col = document.createElement('div');
+                answer_col.classList.add('col-5', 'border', 'rounded');
+                answer_col.style.marginTop = '12px';
+                answer_col.style.paddingTop = '12px';
+                answer_col.style.paddingBottom = '12px';
+                answer_col.style.verticalAlign = 'middle';
+                answer_col.style.color = 'black';
+                answer_col.style.width = '55%';
+                answer_col.align = 'left';
+                answer_col.innerHTML = chat_response.data.answer;
+
+                empty_col = document.createElement('div');
+                empty_col.classList.add('col-1');
+                empty_col.style = "display: flex; flex-direction: column; justify-content: flex-end;";
+                empty_col.style.color = 'black';
+                empty_col.style.verticalAlign = 'middle';
+                empty_col.innerHTML = '<i class="bi bi-person-circle" style="font-size: 2.5rem"></i>';
+
+                answer_row.appendChild(empty_col);
+                answer_row.appendChild(answer_col);
+                chat_window.appendChild(answer_row);
+                scrollToBottom();
+            }
+        }
+
+        function scrollToBottom() {
+            var chatWindow = document.getElementById("chat_window");
+            chatWindow.scrollTop = chatWindow.scrollHeight;
         }
     </script>
 </body>
+
 </html>

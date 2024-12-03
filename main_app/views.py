@@ -10,6 +10,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 import os
+import json
 from openai import OpenAI
 from datetime import timedelta
 
@@ -17,6 +18,7 @@ from .serializers import *
 from .models import *
 from .tasks import *
 from .permissions import *
+from .functions import get_full_data_for_assistant
 
 
 class LogOutAPIView(APIView):
@@ -108,7 +110,7 @@ class UserAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        data = UserSerializer(User.objects.get(id=1), many=False).data
+        data = UserSerializer(User.objects.get(id=request.user.id), many=False).data
         return Response(data=data, status=status.HTTP_200_OK)
 
 
@@ -160,7 +162,7 @@ class DoctorSearchApiView(APIView):
             doctors = User.objects.filter(Q(category=category))
         else:
             doctors = User.objects.all()
-        data = UserSerializer(instance=doctors, many=True).data
+        data = UserSerializer(instance=doctors.filter(role='DC'), many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
 
 
@@ -214,7 +216,7 @@ class NewslettersApiView(APIView):
 
 
 class BookingApiView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         if request.user.role == 'PT':
@@ -224,9 +226,11 @@ class BookingApiView(APIView):
         elif request.user.role == 'DC':
             doctor = request.user.id
             today = timezone.localtime().date()
-            bookings = Booking.objects.filter(doctor=doctor, datetime=today).filter(status='Accepted').order_by('datetime')
+            bookings = Booking.objects.filter(doctor=doctor).filter(status='Accepted').order_by('datetime')
             if 'datetime' in request.GET:
                 bookings = bookings.filter(datetime__icontains=request.GET.get('datetime'))
+            else:
+                bookings = bookings.filter(datetime=today)
             if 'patient' in request.GET:
                 patients = User.objects.filter(role='PT')
                 patients_by_iin = patients.filter(iin__icontains=request.GET.get('patient'))
@@ -472,33 +476,174 @@ class ScheduleApiView(APIView):
 class OpenAIChatAPIView(APIView):
     permission_classes = [IsDoctor]
 
+    def get(self, request):
+        client = OpenAI(
+            organization='org-it8s8YV4jWhggOrNTbHlehrI',
+            api_key='sk-svcacct-SLQx8574w2lGT14ZH6UeI_4ztJVBLjmngkBhwQWBWkNfdv7eqPSTH1WEvJGNnT3BlbkFJJGDT-kpZCjlDeN7zgZ'
+                    'h5mbzkslwcqGpY98Zq8j43Qq38WldsC9Z3XucNCOG-QA'
+        )
+
+        thread = client.beta.threads.create()
+
+        message = client.beta.threads.messages.create(
+            thread_id=thread.id,
+            role="user",
+            content='Hello'
+        )
+
+        run = client.beta.threads.runs.create_and_poll(
+            thread_id=thread.id,
+            assistant_id='asst_XF8BBswTepjcYsSbxVO9ngUz'
+        )
+
+        if run.status == 'completed':
+            messages = client.beta.threads.messages.list(
+                thread_id=thread.id
+            )
+            assistant_messages = [message.content for message in messages.data if message.role == 'assistant']
+            last_assistant_message = assistant_messages[-1][0] if assistant_messages else None
+            return Response(data={
+                "answer": last_assistant_message.text.value,
+                "thread_id": thread.id
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={'detail': run.last_error}, status=status.HTTP_400_BAD_REQUEST)
+
     def post(self, request):
         message = request.data.get('message')
-        return Response({"message": message}, status=status.HTTP_200_OK)
+        thread_id = request.data.get('thread_id')
+
         client = OpenAI(
-            api_key=os.environ.get("OPENAI_API_KEY"),  # This is the default and can be omitted
+            organization='org-it8s8YV4jWhggOrNTbHlehrI',
+            api_key='sk-svcacct-SLQx8574w2lGT14ZH6UeI_4ztJVBLjmngkBhwQWBWkNfdv7eqPSTH1WEvJGNnT3BlbkFJJGDT-kpZCjlDeN7zgZ'
+                    'h5mbzkslwcqGpY98Zq8j43Qq38WldsC9Z3XucNCOG-QA'
         )
 
-        chat_completion = client.chat.completions.create(
-            messages=[
-                {
-                    "role": "user",
-                    "content": "Say this is a test",
-                }
-            ],
-            model="gpt-4o-mini",
+        message = client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=message
         )
 
-        print(chat_completion.choices[0])
-        answer = chat_completion.choices[0].text.strip()
-        return Response({"answer": answer}, status=status.HTTP_200_OK)
+        run = client.beta.threads.runs.create_and_poll(
+            thread_id=thread_id,
+            assistant_id='asst_XF8BBswTepjcYsSbxVO9ngUz'
+        )
+
+        if run.status == 'completed':
+            messages = client.beta.threads.messages.list(
+                thread_id=thread_id
+            )
+            assistant_messages = [message.content for message in messages.data if message.role == 'assistant']
+            last_assistant_message = assistant_messages[0][0] if assistant_messages else None
+            return Response(data={
+                "answer": last_assistant_message.text.value,
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={'detail': run.last_error}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        thread_id = request.data.get('thread_id')
+
+        client = OpenAI(
+            organization='org-it8s8YV4jWhggOrNTbHlehrI',
+            api_key='sk-svcacct-SLQx8574w2lGT14ZH6UeI_4ztJVBLjmngkBhwQWBWkNfdv7eqPSTH1WEvJGNnT3BlbkFJJGDT-kpZCjlDeN7zgZ'
+                    'h5mbzkslwcqGpY98Zq8j43Qq38WldsC9Z3XucNCOG-QA'
+        )
+
+        response = client.beta.threads.delete(thread_id)
+        return Response(data={'response': response}, status=status.HTTP_200_OK)
+
+
+class OpenAIUserChatAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        data = get_full_data_for_assistant()
+
+        client = OpenAI(
+            organization='org-it8s8YV4jWhggOrNTbHlehrI',
+            api_key='sk-svcacct-SLQx8574w2lGT14ZH6UeI_4ztJVBLjmngkBhwQWBWkNfdv7eqPSTH1WEvJGNnT3BlbkFJJGDT-kpZCjlDeN7zgZ'
+                    'h5mbzkslwcqGpY98Zq8j43Qq38WldsC9Z3XucNCOG-QA'
+        )
+
+        thread = client.beta.threads.create()
+
+        message = client.beta.threads.messages.create(
+            thread_id=thread.id,
+            role="user",
+            content='I send you json data of our doctors and schedules. Use them for next answers, but dont tell '
+                    'anyone that you using this data' + str(data)
+        )
+
+        run = client.beta.threads.runs.create_and_poll(
+            thread_id=thread.id,
+            assistant_id='asst_qydEpuyVNEIWp9y9k5o4FR5z'
+        )
+
+        if run.status == 'completed':
+            messages = client.beta.threads.messages.list(
+                thread_id=thread.id
+            )
+            assistant_messages = [message.content for message in messages.data if message.role == 'assistant']
+            last_assistant_message = assistant_messages[-1][0] if assistant_messages else None
+            return Response(data={
+                "answer": last_assistant_message.text.value,
+                "thread_id": thread.id
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={'detail': run.last_error}, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request):
+        message = request.data.get('message')
+        thread_id = request.data.get('thread_id')
+
+        client = OpenAI(
+            organization='org-it8s8YV4jWhggOrNTbHlehrI',
+            api_key='sk-svcacct-SLQx8574w2lGT14ZH6UeI_4ztJVBLjmngkBhwQWBWkNfdv7eqPSTH1WEvJGNnT3BlbkFJJGDT-kpZCjlDeN7zgZ'
+                    'h5mbzkslwcqGpY98Zq8j43Qq38WldsC9Z3XucNCOG-QA'
+        )
+
+        message = client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=message
+        )
+
+        run = client.beta.threads.runs.create_and_poll(
+            thread_id=thread_id,
+            assistant_id='asst_qydEpuyVNEIWp9y9k5o4FR5z'
+        )
+
+        if run.status == 'completed':
+            messages = client.beta.threads.messages.list(
+                thread_id=thread_id
+            )
+            assistant_messages = [message.content for message in messages.data if message.role == 'assistant']
+            last_assistant_message = assistant_messages[0][0] if assistant_messages else None
+            return Response(data={
+                "answer": last_assistant_message.text.value,
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(data={'detail': run.last_error}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        thread_id = request.data.get('thread_id')
+
+        client = OpenAI(
+            organization='org-it8s8YV4jWhggOrNTbHlehrI',
+            api_key='sk-svcacct-SLQx8574w2lGT14ZH6UeI_4ztJVBLjmngkBhwQWBWkNfdv7eqPSTH1WEvJGNnT3BlbkFJJGDT-kpZCjlDeN7zgZ'
+                    'h5mbzkslwcqGpY98Zq8j43Qq38WldsC9Z3XucNCOG-QA'
+        )
+
+        response = client.beta.threads.delete(thread_id)
+        return Response(data={'response': response}, status=status.HTTP_200_OK)
 
 
 class AuthAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        # return Response(data={'is_authenticated': True, 'role': 'DC'}, status=status.HTTP_200_OK)
         if request.user and request.user.is_authenticated:
             return Response(data={'is_authenticated': True, 'role': request.user.role}, status=status.HTTP_200_OK)
         return Response(data={'is_authenticated': False, 'role': None}, status=status.HTTP_200_OK)

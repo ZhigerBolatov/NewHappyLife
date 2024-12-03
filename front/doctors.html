@@ -56,6 +56,7 @@
                 <a href="service.html" class="nav-item nav-link">Service</a>
                 <a href="doctors.html" class="nav-item nav-link active">Doctors</a>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
+                <a href="assistant.html" class="nav-item nav-link">Assistant</a>
             </div>
             <a id="user_link" href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block"></a>
         </div>
@@ -190,6 +191,7 @@
     <script>
         async function preload() {
              load_auth_route();
+
             const categories_response = await fetchData('categories', 'GET', null);
             if (categories_response.status == 200) {
                 const category_footer_container = document.getElementById('category_footer_container');
@@ -233,7 +235,7 @@
 
                         let image_container = document.createElement('div');
                         image_container.classList.add('overflow-hidden');
-                        image_container.innerHTML = `<img class="img-fluid" style="width: 261px !important; height: 341.250px !important;" src="${doctor.photo}" alt="">`;
+                        image_container.innerHTML = `<img class="img-fluid" style="width: 100% !important; height: 400px !important;" src="${doctor.photo}" alt="">`;
 
                         let info_container = document.createElement('div');
                         info_container.classList.add('team-text', 'bg-light', 'text-center', 'p-4');

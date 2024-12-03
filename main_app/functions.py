@@ -10,3 +10,15 @@ def datetime_serialize(datetime_str):
         "time": datetime_obj.strftime("%H:%M")
     }
     return result
+
+
+def get_full_data_for_assistant():
+    from .models import Booking, User
+    from .serializers import UserFullSerializer, BookingSerializer
+
+    doctors = User.objects.filter(role='DC')
+    data = UserFullSerializer(instance=doctors, many=True).data
+    for doctor in data:
+        bookings = Booking.objects.filter(doctor=doctor['id']).filter(status='Accepted')
+        doctor['bookings'] = BookingSerializer(instance=bookings, many=True).data
+    return data

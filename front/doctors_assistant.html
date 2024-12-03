@@ -56,6 +56,7 @@
                 <a href="service.html" class="nav-item nav-link">Service</a>
                 <a href="doctors.html" class="nav-item nav-link">Doctors</a>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
+                <a href="assistant.html" class="nav-item nav-link">Assistant</a>
             </div>
             <a id="user_link" href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block"></a>
         </div>
@@ -85,10 +86,10 @@
                             </div>
                             <div class="row" style="width: 95%; margin-left:auto; margin-right: auto; margin-top: 12px; margin-bottom: 12px">
                                 <div class="col-lg-11" style="padding: 0px !important">
-                                    <input value="Hello World!" id="message_input" type="text" class="form-control" placeholder="Input Your Message" style="color: black;">
+                                    <input id="message_input" value="Please wait! Assistant is loading..." disabled type="text" class="form-control" placeholder="Input Your Message" style="color: black;">
                                 </div>
                                 <div class="col-lg-1" style="padding: 0px !important">
-                                    <button class="btn btn-primary" onclick="send_message()">Send</button>
+                                    <button id="send_message_button" class="btn btn-primary" onclick="send_message()" disabled>Send</button>
                                 </div>
                             </div>
                         </div>
@@ -173,7 +174,17 @@
     <script src="js/main.js"></script>
     <script src="js/script.js"></script>
     <script>
-        let selected_appointment = null;
+        let thread_id = null;
+        const send_message_button = document.getElementById('send_message_button');
+        const message_input = document.getElementById('message_input');
+        const chat_window = document.getElementById('chat_window');
+
+        const user_link = document.getElementById('user_link');
+        if (user_link.dataset.is_authenticated == 'true') {
+            user_link.href = '';
+            user_link.innerHTML = 'Log Out<i class="fa fa-arrow-up ms-3"></i>';
+            user_link.onclick = await logout;
+        }
 
         async function preload() {
             const user_role = await load_auth_route();
@@ -182,6 +193,10 @@
                 window.location.href = 'login.html';
             }
 
+            window.addEventListener('beforeunload', function(event) {
+                delete_chat();
+            });
+
             const user_link = document.getElementById('user_link');
             if (user_link.dataset.is_authenticated == 'true') {
                 user_link.href = '';
@@ -189,7 +204,9 @@
                 user_link.onclick = logout;
             }
 
-
+            message_input.addEventListener('input', function() {
+                send_message_button.disabled = false;
+            });
 
             const categories_response = await fetchData('categories', 'GET', null);
             if (categories_response.status == 200) {
@@ -203,15 +220,60 @@
                 }
             }
 
-            send_message();
-
             newsletter_init();
+            create_chat();
+        }
+
+        async function delete_chat() {
+            const body = {
+                thread_id: thread_id
+            };
+            const chat_response = await fetchData('chat', 'DELETE', body);
+        }
+
+        async function create_chat() {
+            const chat_response = await fetchData('chat', 'GET', null);
+            if (chat_response.status == 200) {
+                thread_id = chat_response.data.thread_id;
+
+                const answer_row = document.createElement('div');
+                answer_row.classList.add('row');
+
+                const answer_col = document.createElement('div');
+                answer_col.classList.add('col-5', 'border', 'rounded');
+                answer_col.style.marginTop = '12px';
+                answer_col.style.paddingTop = '12px';
+                answer_col.style.paddingBottom = '12px';
+                answer_col.style.verticalAlign = 'middle';
+                answer_col.style.color = 'black';
+                answer_col.style.width = '55%';
+                answer_col.align = 'left';
+                answer_col.innerHTML = chat_response.data.answer;
+
+                empty_col = document.createElement('div');
+                empty_col.classList.add('col-1');
+                empty_col.style = "display: flex; flex-direction: column; justify-content: flex-end;";
+                empty_col.style.color = 'black';
+                empty_col.style.verticalAlign = 'middle';
+                empty_col.innerHTML = '<i class="bi bi-person-circle" style="font-size: 2.5rem"></i>';
+
+                answer_row.appendChild(empty_col);
+                answer_row.appendChild(answer_col);
+                chat_window.appendChild(answer_row);
+                scrollToBottom();
+
+                message_input.disabled = false;
+                message_input.value = '';
+
+                message_input.addEventListener("keyup", function(event) {
+                    if (event.keyCode === 13) {
+                        send_message_button.click();
+                    }
+                });
+            }
         }
 
         async function send_message() {
-            const message_input = document.getElementById('message_input');
-            const chat_window = document.getElementById('chat_window');
-
             const message_row = document.createElement('div');
             message_row.classList.add('row');
 
@@ -230,17 +292,23 @@
             let empty_col = document.createElement('div');
             empty_col.classList.add('col-5');
 
-            message_input.value = '';
+            message_input.value = 'Waiting answer...';
+            message_input.disabled = true;
+            send_message_button.disabled = true;
             message_row.appendChild(empty_col);
             message_row.appendChild(message_col);
             chat_window.appendChild(message_row);
             scrollToBottom();
 
             const body = {
-                message: message_col.innerHTML
+                message: message_col.innerHTML,
+                thread_id: thread_id
             }
             const chat_response = await fetchData('chat', 'POST', body);
             if (chat_response.status == 200) {
+                message_input.value = '';
+                message_input.disabled = false;
+
                 const answer_row = document.createElement('div');
                 answer_row.classList.add('row');
 
@@ -253,7 +321,7 @@
                 answer_col.style.color = 'black';
                 answer_col.style.width = '55%';
                 answer_col.align = 'left';
-                answer_col.innerHTML = chat_response.data.message;
+                answer_col.innerHTML = chat_response.data.answer;
 
                 empty_col = document.createElement('div');
                 empty_col.classList.add('col-1');

@@ -56,6 +56,7 @@
                 <a href="service.html" class="nav-item nav-link">Service</a>
                 <a href="doctors.html" class="nav-item nav-link">Doctors</a>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
+                <a href="assistant.html" class="nav-item nav-link">Assistant</a>
             </div>
             <a id="user_link" href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block"></a>
         </div>
@@ -346,17 +347,18 @@
                                 break;
                             }
                         }
-                        if (current_time_slot !== null) {
+                        if (current_time_slot !== null && current_time_slot.time_slots[i] !== undefined) {
+                            console.log(current_time_slot);
                             let button = document.createElement('button');
                             button.innerHTML = current_time_slot.time_slots[i];
                             button.classList.add('btn', 'btn-primary');
-                            button.setAttribute('data-bs-toggle', 'modal');
-                            button.setAttribute('data-bs-target', '#exampleModal');
                             if (!is_authenticated) {
                                 button.addEventListener('click', function() {
                                     window.location.href = `login.html?doctor=${doctor}`;
                                 });
                             } else {
+                                button.setAttribute('data-bs-toggle', 'modal');
+                                button.setAttribute('data-bs-target', '#exampleModal');
                                 button.addEventListener('click', async function() {
                                     let datetime = `${thead.childNodes[j].dataset.year}-`;
                                     datetime += `${thead.childNodes[j].dataset.month}-`;
