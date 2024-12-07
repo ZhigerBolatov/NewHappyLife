@@ -221,12 +221,12 @@ class BookingApiView(APIView):
     def get(self, request):
         if request.user.role == 'PT':
             patient = request.user.id
-            bookings = Booking.objects.filter(patient=patient).filter(status='Accepted').order_by('datetime')
+            bookings = Booking.objects.filter(patient=patient).filter(Q(status='Accepted') | Q(status='Booked')).order_by('datetime')
             data = BookingSerializer(instance=bookings, many=True).data
         elif request.user.role == 'DC':
             doctor = request.user.id
             today = timezone.localtime().date()
-            bookings = Booking.objects.filter(doctor=doctor).filter(status='Accepted').order_by('datetime')
+            bookings = Booking.objects.filter(doctor=doctor).filter(Q(status='Accepted') | Q(status='Booked')).order_by('datetime')
             if 'datetime' in request.GET:
                 bookings = bookings.filter(datetime__icontains=request.GET.get('datetime'))
             else:
@@ -246,9 +246,9 @@ class BookingApiView(APIView):
         elif request.user.role == 'AD':
             today = timezone.localtime().date()
             if 'datetime' in request.GET:
-                bookings = Booking.objects.filter(status='Accepted', datetime__icontains=request.GET.get('datetime'))
+                bookings = Booking.objects.filter(Q(status='Accepted') | Q(status='Booked'), datetime__icontains=request.GET.get('datetime'))
             else:
-                bookings = Booking.objects.filter(status='Accepted', datetime=today).order_by('datetime')
+                bookings = Booking.objects.filter(Q(status='Accepted') | Q(status='Booked'), datetime=today).order_by('datetime')
             if 'patient' in request.GET:
                 patients = User.objects.filter(role='PT')
                 patients_by_iin = patients.filter(iin__icontains=request.GET.get('patient'))
@@ -295,11 +295,12 @@ class HistoryApiView(APIView):
             return Response(data=data, status=status.HTTP_200_OK)
         if request.user.role == 'PT':
             patient = request.user.id
-            booking = Booking.objects.filter(patient=patient).exclude(status='Accepted').order_by('-datetime')
+            booking = Booking.objects.filter(patient=patient).order_by('-datetime')
             data = BookingSerializer(instance=booking, many=True).data
         elif request.user.role == 'DC':
             doctor = request.user.id
-            booking = Booking.objects.filter(doctor=doctor).exclude(status='Accepted').order_by('-datetime')
+            booking = (Booking.objects.filter(doctor=doctor).exclude(status='Accepted').exclude(status='Booked').
+                       order_by('-datetime'))
             data = BookingSerializer(instance=booking, many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -650,11 +651,41 @@ class OpenAIUserChatAPIView(APIView):
         return Response(data={'response': response}, status=status.HTTP_200_OK)
 
 
+class BookedBookingApiView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        half_hour = timezone.localtime() + timedelta(minutes=30)
+        bookings = (Booking.objects.filter(patient=request.user.id).filter(status='Booked')
+                    .filter(datetime__lte=half_hour))
+        data = BookingSerializer(instance=bookings, many=True).data
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        booking_id = request.data.get('id')
+        if booking_id is not None:
+            booking = get_object_or_404(Booking, id=booking_id)
+            booking.status = 'Accepted'
+            booking.save()
+            return Response(data={'success': True}, status=status.HTTP_200_OK)
+        return Response(data={'success': False, 'detail': '"id" is required!'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        booking_id = request.data.get('id')
+        if booking_id is not None:
+            booking = get_object_or_404(Booking, id=booking_id)
+            booking.status = 'Rejected'
+            booking.save()
+            return Response(data={'success': True}, status=status.HTTP_200_OK)
+        return Response(data={'success': False, 'detail': '"id" is required!'},
+                        status=status.HTTP_400_BAD_REQUEST)
+
+
 class AuthAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        # return Response(data={'is_authenticated': True, 'role': 'AD'}, status=status.HTTP_200_OK)
         if request.user and request.user.is_authenticated:
             return Response(data={'is_authenticated': True, 'role': request.user.role}, status=status.HTTP_200_OK)
         return Response(data={'is_authenticated': False, 'role': None}, status=status.HTTP_200_OK)

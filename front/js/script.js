@@ -149,16 +149,31 @@ function validate_email(email){
 }
 
 async function load_auth_route() {
-    let is_authenticated = false;
+    let flag = false;
     const is_authenticated_response = await fetchData('auth', 'GET', null);
     if (is_authenticated_response.status == 200) {
-        is_authenticated = is_authenticated_response.data.is_authenticated;
+        flag = is_authenticated_response.data.is_authenticated;
     }
     const user_link = document.getElementById('user_link');
-    if (is_authenticated) {
-        user_link.href = 'cabinet.html';
+    if (flag) {
+        const li1 = document.createElement('li');
+        const a1 = document.createElement('a');
+        a1.classList.add('dropdown-item')
+        a1.href = 'cabinet.html';
+        a1.innerHTML = 'Cabinet';
+        li1.appendChild(a1);
+        user_link.appendChild(li1);
+
+        const li2 = document.createElement('li');
+        const a2 = document.createElement('a');
+        a2.classList.add('dropdown-item')
+        a2.innerHTML = 'Log Out';
+        a2.onclick = logout;
+        li2.appendChild(a2);
+        user_link.appendChild(li2);
+
         user_link.dataset.is_authenticated = 'true';
-        user_link.innerHTML = 'Cabinet<i class="fa fa-arrow-up ms-3"></i>';
+
 
         const cabinet_nav = document.getElementById('cabinet_nav');
         if (cabinet_nav != null) {
@@ -204,9 +219,14 @@ async function load_auth_route() {
             }
         }
     } else {
-        user_link.href = 'login.html';
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.classList.add('dropdown-item')
+        a.href = 'login.html';
+        a.innerHTML = 'Log In';
+        li.appendChild(a);
+        user_link.appendChild(li);
         user_link.dataset.is_authenticated = 'false';
-        user_link.innerHTML = 'Log In<i class="fa fa-arrow-down ms-3"></i>';
     }
     return is_authenticated_response.data.role;
 }
@@ -216,4 +236,12 @@ async function logout() {
     if (log_out_response.status == 200) {
         window.location.reload();
     }
+}
+
+async function check_authentication() {
+    const is_authenticated_response = await fetchData('auth', 'GET', null);
+    if (is_authenticated_response.status == 200) {
+        return is_authenticated_response.data.is_authenticated;
+    }
+    return false;
 }

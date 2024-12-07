@@ -556,3 +556,40 @@
 #doctors_schedule_table td {
     text-align: center;
 }
+
+.dropdown-menu {
+    background-color: #0463FA;
+}
+
+.dropdown-item {
+    color: #EFF5FF;
+}
+
+.dropdown-item:hover {
+    color: #EFF5FF;
+    background-color: #1B2C51;
+    cursor: pointer;
+}
+
+.btn-terminal {
+    display: inline-block;
+    height: 20vh;
+    font-size: 400%;
+    border-radius: 100px !important;
+}
+
+.btn-back {
+    border-radius: 100px !important;
+    font-size: 200%;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 36px;
+    padding-right: 36px;
+}
+
+.terminal-card-text {
+    font-size: 250%;
+    margin-top: 0px;
+    color: black;
+    margin-left: 36px;
+}

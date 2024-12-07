@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Happy Lifes</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500&family=Roboto:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="../lib/animate/animate.min.css" rel="stylesheet">
+    <link href="../lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="../lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="../css/style.css" rel="stylesheet">
+
+    <style>
+        .breadcrumb {
+            margin-top: 36px;
+            margin-left: 36px;
+            padding-left: 12px;
+            font-size: 200%;
+            border-radius: 100px;
+            width: auto;
+        }
+        p {
+            font-size: 200%;
+        }
+        h1 {
+            font-size: 400%;
+        }
+        table {
+            font-size: 200%;
+        }
+        td button {
+            font-size: 150% !important;
+        }
+        .modal-content {
+            font-size: 200%;
+        }
+        .modal-content h1 {
+            font-size: 200% !important;
+        }
+        .modal-footer button {
+            font-size: 120% !important;
+        }
+    </style>
+</head>
+<body onload="preload()">
+    <div class="container" style="margin-top: 36px;">
+        <button class="btn btn-primary btn-back" onclick="window.location.href='doctors.html'">
+            <i class="bi bi-arrow-left"></i> Back
+        </button>
+    </div>
+
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-6 wow fadeIn" data-wow-delay="0.8s">
+                    <div class="d-flex flex-column">
+                        <img id="doctors_photo" class="img-fluid rounded w-75 align-self-end" src="" alt="">
+                    </div>
+                </div>
+                <div class="col-lg-6 wow fadeIn" data-wow-delay="1.1s">
+                    <h1 id="doctors_name"></h1>
+                    <p id="doctors_category" class="d-inline-block border rounded-pill py-1 px-4"></p>
+                    <p id="doctors_bio" align="justify"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-12 wow fadeIn table-container" data-wow-delay="1.4s">
+                    <table class="table table-borderless" id="doctors_schedule_table">
+                        <thead>
+                            <tr></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" align="center" id="exampleModal" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Your Appointment</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="appointment_info" style="color: black;"></div>
+                <div class="modal-footer" id="modal_footer">
+                    <button id="cancel_button" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="confirm_button" type="button" class="btn btn-primary" onclick="make_appointment()">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../lib/wow/wow.min.js"></script>
+    <script src="../lib/easing/easing.min.js"></script>
+    <script src="../lib/waypoints/waypoints.min.js"></script>
+    <script src="../lib/counterup/counterup.min.js"></script>
+    <script src="../lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="../lib/tempusdominus/js/moment.min.js"></script>
+    <script src="../lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="../lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="../js/main.js"></script>
+    <script src="../js/script.js"></script>
+    <script>
+        async function preload() {
+            const is_authenticated = await check_authentication();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const doctor = urlParams.get('doctor');
+            if (doctor === null) {
+                window.location.href = 'doctors.html';
+            }
+            let url = `doctors_detail/${doctor}`;
+            const doctors_response = await fetchData(url, 'GET', null);
+            if (doctors_response.status == 200) {
+                const data = doctors_response.data;
+                document.getElementById('doctors_photo').src = data.photo;
+
+                const doctors_name_header = document.getElementById('doctors_name');
+                doctors_name_header.innerHTML = `${data.name} ${data.surname}`;
+
+                document.getElementById('doctors_category').innerHTML = `${data.category}`;
+                document.getElementById('doctors_bio').innerHTML = `${data.bio}`;
+
+                doctors_name = data.name;
+                doctors_surname = data.surname;
+            }
+
+            url = `doctors_schedule/${doctor}`;
+            const doctors_schedule_response = await fetchData(url, 'GET', null);
+            if (doctors_schedule_response.status == 200) {
+                const data = doctors_schedule_response.data;
+                const doctors_schedule_table = document.getElementById('doctors_schedule_table');
+                const thead = document.querySelector('#doctors_schedule_table thead tr');
+                const full_month = getFullMonth();
+                for (let item of full_month) {
+                    let th = document.createElement('th');
+                    th.scope = 'col';
+                    th.innerHTML = `${item.weekday}<br>${item.date}.${String(item.month).padStart(2, "0")}`;
+                    th.dataset.weekday = item.weekday;
+                    th.dataset.date = item.date;
+                    th.dataset.month = item.month;
+                    th.dataset.year = item.year;
+                    thead.appendChild(th);
+                }
+
+                let calendar = [];
+                let max_length = 0;
+                for (let item of data.time_slots) {
+                    let time_slots = getTimeSlots(item.starts_at, item.ends_at);
+                    if (max_length < time_slots.length) {
+                        max_length = time_slots.length;
+                    }
+
+                    let time_slot_obj = {
+                        weekday: item.week_day,
+                        time_slots: time_slots
+                    };
+                    calendar.push(time_slot_obj);
+                }
+
+                const tbody = document.querySelector('#doctors_schedule_table tbody');
+                const today = new Date();
+                for (let i = 0; i < max_length; i++) {
+                    let tr = document.createElement('tr');
+                    for (let j = 0; j < thead.childNodes.length; j++) {
+                        let td = document.createElement('td');
+                        let current_time_slot = null;
+                        for (let item of calendar) {
+                            if (item.weekday == thead.childNodes[j].dataset.weekday) {
+                                current_time_slot = item;
+                                break;
+                            }
+                        }
+                        if (current_time_slot !== null && current_time_slot.time_slots[i] !== undefined) {
+                            let button = document.createElement('button');
+                            button.innerHTML = current_time_slot.time_slots[i];
+                            button.classList.add('btn', 'btn-primary');
+                            if (!is_authenticated) {
+                                button.addEventListener('click', function() {
+                                    window.location.href = `login.html?doctor=${doctor}`;
+                                });
+                            } else {
+                                button.setAttribute('data-bs-toggle', 'modal');
+                                button.setAttribute('data-bs-target', '#exampleModal');
+                                button.addEventListener('click', async function() {
+                                    let datetime = `${thead.childNodes[j].dataset.year}-`;
+                                    datetime += `${thead.childNodes[j].dataset.month}-`;
+                                    datetime += `${thead.childNodes[j].dataset.date}T`;
+                                    datetime += `${current_time_slot.time_slots[i]}:00`;
+
+                                    selected_button = button;
+                                    const appointment_info = document.getElementById('appointment_info');
+                                    appointment_info.innerHTML = `Confirm your appointment to doctor "${doctors_name} ${doctors_surname}"`;
+                                    appointment_info.innerHTML += ` ${thead.childNodes[j].dataset.date}-${thead.childNodes[j].dataset.month}-${thead.childNodes[j].dataset.year}`;
+                                    appointment_info.innerHTML += ` at ${current_time_slot.time_slots[i]}?`;
+                                    this.dataset.datetime = datetime;
+                                });
+                            }
+                            if (today.getDate() == thead.childNodes[j].dataset.date && today.getMonth() + 1 == thead.childNodes[j].dataset.month) {
+                                if (isTimePassed(current_time_slot.time_slots[i])) {
+                                    button.disabled = 'disabled';
+                                }
+                            }
+                            let date = `${thead.childNodes[j].dataset.year}-${thead.childNodes[j].dataset.month}-${thead.childNodes[j].dataset.date}T${current_time_slot.time_slots[i]}:00`;
+                            if (isTimeBooked(data.bookings, new Date(date))) {
+                                button.disabled = 'disabled';
+                                button.classList.remove('btn-primary');
+                                button.classList.add('btn-danger');
+                            }
+                            td.appendChild(button);
+                        }
+                        tr.appendChild(td);
+                    }
+                    tbody.appendChild(tr);
+                }
+            }
+        }
+
+        async function make_appointment() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const doctor = urlParams.get('doctor');
+            const body = {
+                doctor: doctor,
+                datetime: selected_button.dataset.datetime
+            };
+            const booking_response = await fetchData('booking', 'POST', body);
+            if (booking_response.status == 200) {
+                const appointment_info = document.getElementById('appointment_info');
+                appointment_info.innerHTML = 'Your appointment successfully registered!';
+
+                document.getElementById('confirm_button').remove();
+                document.getElementById('modal_footer').style.justifyContent  = 'center';
+                const cancel_button = document.getElementById('cancel_button');
+                cancel_button.classList.remove('btn-secondary');
+                cancel_button.classList.add('btn-success');
+                cancel_button.innerHTML = 'Great!';
+                cancel_button.addEventListener('click', function() {
+                    window.location.reload();
+                });
+            }
+        }
+    </script>
+</body>
+</html>

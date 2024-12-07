@@ -70,7 +70,14 @@
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
                 <a href="assistant.html" class="nav-item nav-link">Assistant</a>
             </div>
-            <a id="user_link" href="" class="btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block"></a>
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle btn btn-primary rounded-0 py-4 px-lg-5 d-none d-lg-block" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Profile
+                </a>
+                <ul class="dropdown-menu" id="user_link">
+
+                </ul>
+            </div>
         </div>
     </nav>
     <!-- Navbar End -->
@@ -260,31 +267,24 @@
         async function preload() {
             load_auth_route();
 
-            const user_link = document.getElementById('user_link');
-            if (user_link.dataset.is_authenticated == 'true') {
-
-                user_link.innerHTML = 'Log Out<i class="fa fa-arrow-up ms-3"></i>';
-                user_link.onclick = await logout;
-            }
-
             document.getElementById('image_input').addEventListener('change', function(event) {
-    const file = event.target.files[0];  // Get the selected file
-    if (file) {
-        const reader = new FileReader();
+                const file = event.target.files[0];  // Get the selected file
+                if (file) {
+                    const reader = new FileReader();
 
-        reader.onload = function(e) {
-            // Set the image source to the FileReader result (base64 encoded image data)
-            const imagePreview = document.getElementById('image_preview');
-            imagePreview.src = e.target.result;
+                    reader.onload = function(e) {
+                        // Set the image source to the FileReader result (base64 encoded image data)
+                        const imagePreview = document.getElementById('image_preview');
+                        imagePreview.src = e.target.result;
 
-            // Show the image preview
-            imagePreview.style.display = 'block';
-        };
+                        // Show the image preview
+                        imagePreview.style.display = 'block';
+                    };
 
-        // Read the selected file as a data URL
-        reader.readAsDataURL(file);
-    }
-});
+                // Read the selected file as a data URL
+                reader.readAsDataURL(file);
+            }
+        });
 
             const category_input = document.getElementById('category_input');
             const categories_response = await fetchData('categories', 'GET', null);

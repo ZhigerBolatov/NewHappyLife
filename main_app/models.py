@@ -10,6 +10,7 @@ ROLE_CHOICES = {
 }
 
 STATUS_CHOICES = {
+    'Booked': 'Booked',
     'Accepted': 'Accepted',
     'Rejected': 'Rejected',
     'Done': 'Done'
@@ -109,7 +110,7 @@ class Schedule(models.Model):
 class Booking(models.Model):
     patient = models.ForeignKey('User', related_name='patient_booking', on_delete=models.CASCADE)
     doctor = models.ForeignKey('User', related_name='doctor_booking', on_delete=models.CASCADE)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Accepted')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Booked')
     description = models.TextField(blank=True, null=True)
     datetime = models.DateTimeField()
 

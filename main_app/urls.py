@@ -25,4 +25,5 @@ urlpatterns = [
     path('schedule', ScheduleApiView.as_view()),
     path('chat', OpenAIChatAPIView.as_view()),
     path('user_chat', OpenAIUserChatAPIView.as_view()),
+    path('booked_booking', BookedBookingApiView.as_view()),
 ]
