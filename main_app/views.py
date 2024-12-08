@@ -412,7 +412,7 @@ class StatisticsApiView(APIView):
 
 
 class DoctorRegistrationApiView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminOrReadOnly]
 
     def post(self, request):
         check_iin = User.objects.filter(iin=request.data['iin'])

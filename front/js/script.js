@@ -245,3 +245,8 @@ async function check_authentication() {
     }
     return false;
 }
+
+async function log_out() {
+    await logout();
+    window.location.href = 'index.html';
+}

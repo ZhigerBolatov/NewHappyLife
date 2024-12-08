@@ -573,14 +573,14 @@
 
 .btn-terminal {
     display: inline-block;
-    height: 20vh;
-    font-size: 400%;
+    height: 16vh;
+    font-size: 320%;
     border-radius: 100px !important;
 }
 
 .btn-back {
     border-radius: 100px !important;
-    font-size: 200%;
+    font-size: 160%;
     padding-top: 12px;
     padding-bottom: 12px;
     padding-left: 36px;
@@ -588,7 +588,7 @@
 }
 
 .terminal-card-text {
-    font-size: 250%;
+    font-size: 200%;
     margin-top: 0px;
     color: black;
     margin-left: 36px;
