@@ -85,11 +85,143 @@
             <div class="col col-lg-10 mb-4 mb-lg-0">
                 <div class="card mb-3" style="border-radius: .5rem;">
                     <div class="row g-0">
+                        <div class="col-md-11 gradient-custom text-center"
+                             style="margin-left: auto; margin-right: auto; margin-top: 24px;">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createModal"
+                                    style="width: 100%">
+                                Create New Schedule
+                            </button>
+                        </div>
                         <div class="col-md-11 gradient-custom text-center" id="schedule_container"
                              style="border-radius: .5rem; margin-left: auto; margin-right: auto;">
-
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" align="center" id="createModal" aria-labelledby="createModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="createModalLabel">Create schedule</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" align="left" id="createModalBody" style="color: black;">
+                    <div class="row" style="padding-top: 12px; padding-bottom: 12px">
+                        <input id="create_schedule_name" class="form-control" type="text" placeholder="Schedule Name">
+                    </div>
+                    <div class="row border rounded" style="padding-top: 12px; padding-bottom: 12px">
+                        <div class="col-sm-4" style="display: flex; align-items: center; justify-content: center;">
+                            <h3 align="center">Monday</h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <p style="display: inline">
+                                Starts From: <input id="mon_start" class="form-control" type="time">
+                                Ends At: <input id="mon_end" class="form-control" type="time">
+                            </p>
+                        </div>
+                        <div class="col-sm-2">
+                            <br>
+                            <button id="free_mon" class="btn btn-primary" style="height: 80%; width: 100%">Free Day</button>
+                        </div>
+                    </div>
+                    <div class="row border rounded" style="padding-top: 12px; padding-bottom: 12px">
+                        <div class="col-sm-4" style="display: flex; align-items: center; justify-content: center;">
+                            <h3 align="center">Tuesday</h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <p style="display: inline">
+                                Starts From: <input id="tue_start" class="form-control" type="time">
+                                Ends At: <input id="tue_end" class="form-control" type="time">
+                            </p>
+                        </div>
+                        <div class="col-sm-2">
+                            <br>
+                            <button id="free_tue" class="btn btn-primary" style="height: 80%; width: 100%">Free Day</button>
+                        </div>
+                    </div>
+                    <div class="row border rounded" style="padding-top: 12px; padding-bottom: 12px">
+                        <div class="col-sm-4" style="display: flex; align-items: center; justify-content: center;">
+                            <h3 align="center">Wednesday</h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <p style="display: inline">
+                                Starts From: <input id="wed_start" class="form-control" type="time">
+                                Ends At: <input id="wed_end" class="form-control" type="time">
+                            </p>
+                        </div>
+                        <div class="col-sm-2">
+                            <br>
+                            <button id="free_wed" class="btn btn-primary" style="height: 80%; width: 100%">Free Day</button>
+                        </div>
+                    </div>
+                    <div class="row border rounded" style="padding-top: 12px; padding-bottom: 12px">
+                        <div class="col-sm-4" style="display: flex; align-items: center; justify-content: center;">
+                            <h3 align="center">Thursday</h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <p style="display: inline">
+                                Starts From: <input id="thu_start" class="form-control" type="time">
+                                Ends At: <input id="thu_end" class="form-control" type="time">
+                            </p>
+                        </div>
+                        <div class="col-sm-2">
+                            <br>
+                            <button id="free_thu" class="btn btn-primary" style="height: 80%; width: 100%">Free Day</button>
+                        </div>
+                    </div>
+                    <div class="row border rounded" style="padding-top: 12px; padding-bottom: 12px">
+                        <div class="col-sm-4" style="display: flex; align-items: center; justify-content: center;">
+                            <h3 align="center">Friday</h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <p style="display: inline">
+                                Starts From: <input id="fri_start" class="form-control" type="time">
+                                Ends At: <input id="fri_end" class="form-control" type="time">
+                            </p>
+                        </div>
+                        <div class="col-sm-2">
+                            <br>
+                            <button id="free_fri" class="btn btn-primary" style="height: 80%; width: 100%">Free Day</button>
+                        </div>
+                    </div>
+                    <div class="row border rounded" style="padding-top: 12px; padding-bottom: 12px">
+                        <div class="col-sm-4" style="display: flex; align-items: center; justify-content: center;">
+                            <h3 align="center">Saturday</h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <p style="display: inline">
+                                Starts From: <input id="sat_start" class="form-control" type="time">
+                                Ends At: <input id="sat_end" class="form-control" type="time">
+                            </p>
+                        </div>
+                        <div class="col-sm-2">
+                            <br>
+                            <button id="free_sat" class="btn btn-primary" style="height: 80%; width: 100%">Free Day</button>
+                        </div>
+                    </div>
+                    <div class="row border rounded" style="padding-top: 12px; padding-bottom: 12px">
+                        <div class="col-sm-4" style="display: flex; align-items: center; justify-content: center;">
+                            <h3 align="center">Sunday</h3>
+                        </div>
+                        <div class="col-sm-6">
+                            <p style="display: inline">
+                                Starts From: <input id="sun_start" class="form-control" type="time">
+                                Ends At: <input id="sun_end" class="form-control" type="time">
+                            </p>
+                        </div>
+                        <div class="col-sm-2">
+                            <br>
+                            <button id="free_sun" class="btn btn-primary" style="height: 80%; width: 100%">Free Day</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer" id="create_modal_footer">
+                    <button id="create_cancel_button" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="create_confirm_button" type="button" class="btn btn-primary" onclick="create_schedule()">Submit</button>
                 </div>
             </div>
         </div>
@@ -99,11 +231,12 @@
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="submitModalLabel">Change schedule</h1>
+                    <h1 class="modal-title fs-5" id="submitModalLabel">Change Schedule</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" align="left" id="submitModalBody" style="color: black;">
-                    </div>
+
+                </div>
                 <div class="modal-footer" id="modal_footer">
                     <button id="submit_cancel_button" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button id="submit_confirm_button" type="button" class="btn btn-primary" onclick="change_schedule()">Submit</button>
@@ -333,6 +466,9 @@
                     deleteButton.innerHTML = 'Delete Schedule';
                     deleteButton.id = `delete_${schedule.id}`;
                     deleteButton.dataset.id = schedule.id;
+                    deleteButton.addEventListener('click', function() {
+                        delete_schedule(this.id);
+                    });
 
                     const submitButton = document.createElement('button');
                     submitButton.classList.add('btn', 'btn-secondary');
@@ -365,6 +501,15 @@
                     }
                     counter += 1;
                 }
+            }
+
+            for (let item of week_day_list) {
+                const week_day = item.toLowerCase();
+                const free_button = document.getElementById(`free_${week_day}`);
+                free_button.addEventListener('click', function() {
+                    document.getElementById(`${week_day}_start`).value = null;
+                    document.getElementById(`${week_day}_end`).value = null;
+                });
             }
 
             newsletter_init();
@@ -400,6 +545,62 @@
                 submit_confirm_button.innerHTML = 'Submit';
                 submit_confirm_button.disabled = '';
                 document.getElementById('submitModalBody').innerHTML = 'Something went wrong. Try again!';
+            }
+        }
+
+        async function create_schedule() {
+            let body = {
+                schedule: {
+                    name: document.getElementById('create_schedule_name').value
+                },
+                time_slots: []
+            }
+
+            for (let item of week_day_list) {
+                const week_day = item.toLowerCase();
+                const time_slot = {
+                    week_day: item,
+                    starts_at: document.getElementById(`${week_day}_start`).value,
+                    ends_at: document.getElementById(`${week_day}_end`).value
+                }
+                body.time_slots.push(time_slot);
+            }
+
+            const create_confirm_button = document.getElementById('create_confirm_button');
+            create_confirm_button.innerHTML = 'Processing...';
+            create_confirm_button.disabled = 'disabled';
+            const schedule_response = await fetchData('schedule', 'POST', body);
+            if (schedule_response.status == 200) {
+                create_confirm_button.innerHTML = 'Success';
+                create_confirm_button.classList.remove('btn-primary');
+                create_confirm_button.classList.add('btn-success');
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                create_confirm_button.innerHTML = 'Submit';
+                create_confirm_button.disabled = '';
+            }
+        }
+
+        async function delete_schedule(button_id) {
+            const delete_button = document.getElementById(button_id);
+            delete_button.innerHTML = 'Processing...';
+            delete_button.disabled = 'disabled';
+            const body = {
+                id: delete_button.dataset.id
+            };
+            const schedule_delete_response = await fetchData('schedule', 'DELETE', body);
+            if (schedule_delete_response.status == 200) {
+                delete_button.innerHTML = 'Success';
+                delete_button.classList.remove('btn-danger');
+                delete_button.classList.add('btn-success');
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                delete_button.innerHTML = 'Delete Schedule';
+                delete_button.disabled = '';
             }
         }
     </script>
