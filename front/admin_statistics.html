@@ -117,15 +117,19 @@
                                             <h6>All Appointments</h6>
                                             <p class="text-muted" id="day_all">0</p>
                                         </div>
-                                        <div class="col-4 mb-3">
+                                        <div class="col-3 mb-3">
                                             <h6 style="color: green">Accepted</h6>
                                             <p class="text-muted" id="day_accepted">0</p>
                                         </div>
-                                        <div class="col-4 mb-3">
+                                        <div class="col-3 mb-3">
+                                            <h6 style="color: green">Booked</h6>
+                                            <p class="text-muted" id="day_booked">0</p>
+                                        </div>
+                                        <div class="col-3 mb-3">
                                             <h6 style="color: red">Rejected</h6>
                                             <p class="text-muted" id="day_rejected">0</p>
                                         </div>
-                                        <div class="col-4 mb-3">
+                                        <div class="col-3 mb-3">
                                             <h6 style="color: #0463FA">Done</h6>
                                             <p class="text-muted" id="day_done">0</p>
                                         </div>
@@ -145,15 +149,19 @@
                                         <h6>All Appointments</h6>
                                         <p class="text-muted" id="all_all"></p>
                                     </div>
-                                    <div class="col-3 mb-3">
+                                    <div class="col-2 mb-3">
                                         <h6 style="color: green">Accepted</h6>
                                         <p class="text-muted" id="all_accepted"></p>
                                     </div>
-                                    <div class="col-3 mb-3">
+                                    <div class="col-2 mb-3">
+                                        <h6 style="color: green">Booked</h6>
+                                        <p class="text-muted" id="all_booked"></p>
+                                    </div>
+                                    <div class="col-2 mb-3">
                                         <h6 style="color: red">Rejected</h6>
                                         <p class="text-muted" id="all_rejected"></p>
                                     </div>
-                                    <div class="col-3 mb-3">
+                                    <div class="col-2 mb-3">
                                         <h6 style="color: #0463FA">Done</h6>
                                         <p class="text-muted" id="all_done"></p>
                                     </div>
@@ -172,15 +180,19 @@
                                         <h6>All Appointments</h6>
                                         <p class="text-muted" id="week_all"></p>
                                     </div>
-                                    <div class="col-3 mb-3">
+                                    <div class="col-2 mb-3">
                                         <h6 style="color: green">Accepted</h6>
                                         <p class="text-muted" id="week_accepted"></p>
                                     </div>
-                                    <div class="col-3 mb-3">
+                                    <div class="col-2 mb-3">
+                                        <h6 style="color: green">Booked</h6>
+                                        <p class="text-muted" id="week_booked"></p>
+                                    </div>
+                                    <div class="col-2 mb-3">
                                         <h6 style="color: red">Rejected</h6>
                                         <p class="text-muted" id="week_rejected"></p>
                                     </div>
-                                    <div class="col-3 mb-3">
+                                    <div class="col-2 mb-3">
                                         <h6 style="color: #0463FA">Done</h6>
                                         <p class="text-muted" id="week_done"></p>
                                     </div>
@@ -199,15 +211,19 @@
                                         <h6>All Appointments</h6>
                                         <p class="text-muted" id="month_all"></p>
                                     </div>
-                                    <div class="col-3 mb-3">
+                                    <div class="col-2 mb-3">
                                         <h6 style="color: green">Accepted</h6>
                                         <p class="text-muted" id="month_accepted"></p>
                                     </div>
-                                    <div class="col-3 mb-3">
+                                    <div class="col-2 mb-3">
+                                        <h6 style="color: green">Booked</h6>
+                                        <p class="text-muted" id="month_booked"></p>
+                                    </div>
+                                    <div class="col-2 mb-3">
                                         <h6 style="color: red">Rejected</h6>
                                         <p class="text-muted" id="month_rejected"></p>
                                     </div>
-                                    <div class="col-3 mb-3">
+                                    <div class="col-2 mb-3">
                                         <h6 style="color: #0463FA">Done</h6>
                                         <p class="text-muted" id="month_done"></p>
                                     </div>
@@ -355,6 +371,7 @@
             if (statistic_response.status == 200) {
                 document.getElementById(`day_all`).innerHTML = statistic_response.data.all;
                 document.getElementById(`day_accepted`).innerHTML = statistic_response.data.accepted;
+                document.getElementById(`day_booked`).innerHTML = statistic_response.data.booked;
                 document.getElementById(`day_rejected`).innerHTML = statistic_response.data.rejected;
                 document.getElementById(`day_done`).innerHTML = statistic_response.data.done;
             }
@@ -369,6 +386,7 @@
             if (statistic_response.status == 200) {
                 document.getElementById(`${type}_all`).innerHTML = statistic_response.data.all;
                 document.getElementById(`${type}_accepted`).innerHTML = statistic_response.data.accepted;
+                document.getElementById(`${type}_booked`).innerHTML = statistic_response.data.booked;
                 document.getElementById(`${type}_rejected`).innerHTML = statistic_response.data.rejected;
                 document.getElementById(`${type}_done`).innerHTML = statistic_response.data.done;
             }

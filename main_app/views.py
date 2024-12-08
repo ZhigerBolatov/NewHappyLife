@@ -45,9 +45,11 @@ class RegistrationApiView(APIView):
         if len(check_telephone) > 0:
             return Response(data={'success': False, 'field': 'telephone'}, status=status.HTTP_400_BAD_REQUEST)
 
+        category = request.data.get('category')
         mutable_query_dict = dict(request.data.copy())
         mutable_query_dict.update({'role': ['PT']})
-        mutable_query_dict['category'] = [Category.objects.get(id=request.data.get('category'))]
+        if category is not None:
+            mutable_query_dict['category'] = [Category.objects.get(id=category)]
         for key in mutable_query_dict.keys():
             mutable_query_dict[key] = mutable_query_dict[key][0]
         User.objects.create_user(**mutable_query_dict)
@@ -310,7 +312,6 @@ class RejectBookingApiView(APIView):
     permission_classes = [IsAuthenticated]
 
     def patch(self, request):
-        request.user.role = 'AD'
         if request.user.role == 'PT':
             patient = request.user.id
             booking = Booking.objects.filter(patient=patient).get(id=request.data.get('id'))
@@ -353,7 +354,6 @@ class StatisticsApiView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        request.user.role = 'AD'
         if request.user.role == 'DC':
             statistics_type = request.GET.get('type')
             if statistics_type == 'datetime':
@@ -373,11 +373,13 @@ class StatisticsApiView(APIView):
                 bookings = Booking.objects.filter(doctor=request.user.id)
             accepted = len(bookings.filter(status='Accepted'))
             rejected = len(bookings.filter(status='Rejected'))
+            booked = len(bookings.filter(status='Booked'))
             done = len(bookings.filter(status='Done'))
             data = {
                 'all': len(bookings),
                 'accepted': accepted,
                 'rejected': rejected,
+                'booked': booked,
                 'done': done
             }
             return Response(data=data, status=status.HTTP_200_OK)
@@ -401,11 +403,13 @@ class StatisticsApiView(APIView):
                 bookings = bookings.filter(doctor=doctor_id)
             accepted = len(bookings.filter(status='Accepted'))
             rejected = len(bookings.filter(status='Rejected'))
+            booked = len(bookings.filter(status='Booked'))
             done = len(bookings.filter(status='Done'))
             data = {
                 'all': len(bookings),
                 'accepted': accepted,
                 'rejected': rejected,
+                'booked': booked,
                 'done': done
             }
             return Response(data=data, status=status.HTTP_200_OK)
@@ -724,7 +728,7 @@ class AuthAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        # return Response(data={'is_authenticated': True, 'role': 'PT'}, status=status.HTTP_200_OK)
+        # return Response(data={'is_authenticated': True, 'role': 'AD'}, status=status.HTTP_200_OK)
         if request.user and request.user.is_authenticated:
             return Response(data={'is_authenticated': True, 'role': request.user.role}, status=status.HTTP_200_OK)
         return Response(data={'is_authenticated': False, 'role': None}, status=status.HTTP_200_OK)
