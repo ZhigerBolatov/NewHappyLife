@@ -438,7 +438,7 @@ class DoctorRegistrationApiView(APIView):
 
 
 class ScheduleApiView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAdminOrReadOnly]
 
     def get(self, request):
         schedules = Schedule.objects.all()

@@ -1,5 +1,5 @@
-const backEndUrl = 'https://happylifes.org:8000/';
-//const backEndUrl = 'http://127.0.0.1:8000/';
+//const backEndUrl = 'https://happylifes.org:8000/';
+const backEndUrl = 'http://127.0.0.1:8000/';
 
 async function fetchData(url, method, body, content_type = 'application/json') {
     let response = null;
