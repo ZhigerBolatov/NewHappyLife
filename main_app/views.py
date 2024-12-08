@@ -33,6 +33,10 @@ class RegistrationApiView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
+        check_iin = User.objects.filter(iin=request.data['iin'])
+        if len(check_iin) > 0:
+            return Response(data={'success': False, 'field': 'iin'}, status=status.HTTP_400_BAD_REQUEST)
+
         check_email = User.objects.filter(email=request.data['email'])
         if len(check_email) > 0:
             return Response(data={'success': False, 'field': 'email'}, status=status.HTTP_400_BAD_REQUEST)
@@ -41,17 +45,14 @@ class RegistrationApiView(APIView):
         if len(check_telephone) > 0:
             return Response(data={'success': False, 'field': 'telephone'}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            user = User.objects.create_user(iin=request.data['iin'], password=request.data['password'])
-        except IntegrityError:
-            return Response(data={'success': False, 'field': 'iin'}, status=status.HTTP_400_BAD_REQUEST)
+        mutable_query_dict = dict(request.data.copy())
+        mutable_query_dict.update({'role': ['PT']})
+        mutable_query_dict['category'] = [Category.objects.get(id=request.data.get('category'))]
+        for key in mutable_query_dict.keys():
+            mutable_query_dict[key] = mutable_query_dict[key][0]
+        User.objects.create_user(**mutable_query_dict)
 
-        request.data['role'] = 'PT'
-        user = UserSerializer(instance=user, data=request.data, partial=True)
-        if user.is_valid():
-            user.save()
-            return Response(data={'success': True}, status=status.HTTP_200_OK)
-        return Response(data={'success': False, 'detail': user.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={'success': True}, status=status.HTTP_200_OK)
 
 
 class PasswordResetAPIView(APIView):
@@ -411,9 +412,13 @@ class StatisticsApiView(APIView):
 
 
 class DoctorRegistrationApiView(APIView):
-    permission_classes = [IsAdminOrReadOnly]
+    permission_classes = [AllowAny]
 
     def post(self, request):
+        check_iin = User.objects.filter(iin=request.data['iin'])
+        if len(check_iin) > 0:
+            return Response(data={'success': False, 'field': 'iin'}, status=status.HTTP_400_BAD_REQUEST)
+
         check_email = User.objects.filter(email=request.data['email'])
         if len(check_email) > 0:
             return Response(data={'success': False, 'field': 'email'}, status=status.HTTP_400_BAD_REQUEST)
@@ -422,18 +427,14 @@ class DoctorRegistrationApiView(APIView):
         if len(check_telephone) > 0:
             return Response(data={'success': False, 'field': 'telephone'}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            user = User.objects.create_user(iin=request.data['iin'], password=request.data['password'])
-        except IntegrityError:
-            return Response(data={'success': False, 'field': 'iin'}, status=status.HTTP_400_BAD_REQUEST)
+        mutable_query_dict = dict(request.data.copy())
+        mutable_query_dict.update({'role': ['DC']})
+        mutable_query_dict['category'] = [Category.objects.get(id=request.data.get('category'))]
+        for key in mutable_query_dict.keys():
+            mutable_query_dict[key] = mutable_query_dict[key][0]
+        User.objects.create_user(**mutable_query_dict)
 
-        multable_query_dict = request.data.copy()
-        multable_query_dict.update({'role': 'DC'})
-        user = UserSerializer(instance=user, data=multable_query_dict, partial=True)
-        if user.is_valid():
-            user.save()
-            return Response(data={'success': True}, status=status.HTTP_200_OK)
-        return Response(data={'success': False, 'detail': user.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={'success': True}, status=status.HTTP_200_OK)
 
 
 class ScheduleApiView(APIView):
