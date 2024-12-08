@@ -684,9 +684,15 @@ class BookedBookingApiView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        half_hour = timezone.localtime() + timedelta(minutes=30)
-        bookings = (Booking.objects.filter(patient=request.user.id).filter(status='Booked')
-                    .filter(datetime__lte=half_hour))
+        request.user.id = 1
+        # half_hour = timezone.localtime() + timedelta(minutes=30)
+        today = timezone.localtime().date()
+        now = timezone.localtime().time()
+        bookings = Booking.objects.filter(patient=request.user.id).filter(status='Booked',
+                                                                          datetime__year=today.year,
+                                                                          datetime__month=today.month,
+                                                                          datetime__day=today.day,
+                                                                          datetime__time__gte=now)
         data = BookingSerializer(instance=bookings, many=True).data
         return Response(data=data, status=status.HTTP_200_OK)
 
@@ -694,6 +700,8 @@ class BookedBookingApiView(APIView):
         booking_id = request.data.get('id')
         if booking_id is not None:
             booking = get_object_or_404(Booking, id=booking_id)
+            if (timezone.localtime() - booking.datetime).seconds > 1800:
+                return Response(data={'success': False}, status=status.HTTP_400_BAD_REQUEST)
             booking.status = 'Accepted'
             booking.save()
             return Response(data={'success': True}, status=status.HTTP_200_OK)
@@ -704,6 +712,8 @@ class BookedBookingApiView(APIView):
         booking_id = request.data.get('id')
         if booking_id is not None:
             booking = get_object_or_404(Booking, id=booking_id)
+            if (timezone.localtime() - booking.datetime).seconds < 1800:
+                return Response(data={'success': False}, status=status.HTTP_400_BAD_REQUEST)
             booking.status = 'Rejected'
             booking.save()
             return Response(data={'success': True}, status=status.HTTP_200_OK)

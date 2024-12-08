@@ -47,6 +47,18 @@
             color: black !important;
             margin-top: 0px !important;
         }
+
+        #acceptModalLabel {
+            font-size: 400% !important;
+        }
+
+        #acceptModalBody {
+            font-size: 250%;
+        }
+
+        .modal-footer button {
+            font-size: 250%;
+        }
     </style>
 </head>
 <body onload="preload()">
@@ -69,6 +81,41 @@
 
         </div>
     </div>
+
+    <div class="modal fade" id="acceptModal" tabindex="-1" aria-labelledby="acceptModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="acceptModalLabel">Accept Booking</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="acceptModalBody">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="rejectModalLabel">Reject Booking</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="rejectModalBody">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -125,7 +172,7 @@
                     row.appendChild(p);
 
                     const accept_button = document.createElement('button');
-                    accept_button.classList.add('btn', 'btn-primary');
+                    accept_button.classList.add('btn', 'btn-primary', 'btn-accept');
                     accept_button.style.marginTop = "36px";
                     accept_button.style.marginBottom = "12px";
                     accept_button.style.marginRight = "auto";
@@ -134,12 +181,13 @@
                     accept_button.style.fontSize = "250%";
                     accept_button.innerHTML = 'Accept Booking';
                     accept_button.dataset.id = item.id;
-                    accept_button.addEventListener('click', accept_booking);
+                    accept_button.setAttribute('data-bs-toggle', "modal");
+                    accept_button.setAttribute('data-bs-target', "#acceptModal");
                     row.appendChild(accept_button);
                     row.innerHTML += '<p style="margin: 0px;"></p>';
 
                     const reject_button = document.createElement('button');
-                    reject_button.classList.add('btn', 'btn-danger');
+                    reject_button.classList.add('btn', 'btn-danger', 'btn-reject');
                     reject_button.style.marginTop = "12px";
                     reject_button.style.marginBottom = "36px";
                     reject_button.style.marginRight = "auto";
@@ -148,7 +196,8 @@
                     reject_button.style.fontSize = "250%";
                     reject_button.innerHTML = 'Reject Booking';
                     reject_button.dataset.id = item.id;
-                    reject_button.addEventListener('click', reject_booking);
+                    reject_button.setAttribute('data-bs-toggle', "modal");
+                    reject_button.setAttribute('data-bs-target', "#rejectModal");
                     row.appendChild(reject_button);
 
                     main_container.appendChild(row);
@@ -156,39 +205,51 @@
             } else {
 
             }
+
+            let buttons = document.getElementsByClassName('btn-accept');
+            for (let button of buttons) {
+                button.addEventListener('click', accept_booking);
+            }
+
+            buttons = document.getElementsByClassName('btn-reject');
+            for (let button of buttons) {
+                button.addEventListener('click', reject_booking);
+            }
         }
 
         async function accept_booking() {
-            this.innerHTML = 'Processing...';
-            this.disabled = 'disabled';
+            const acceptModalBody = document.getElementById('acceptModalBody');
+
+            acceptModalBody.innerHTML = 'Processing...';
             const body = {
                 id: this.dataset.id
             }
             const accept_booking_response = await fetchData('booked_booking', 'POST', body);
             if (accept_booking_response.status == 200) {
-                this.innerHTML = 'Success';
-                this.classList.remove('btn-primary');
-                this.classList.add('btn-success');
+                acceptModalBody.innerHTML = 'Success';
                 setTimeout(function () {
                     log_out();
-                }, 1000);
+                }, 1500);
+            } else {
+                acceptModalBody.innerHTML = 'You cannot Accept you booking later than a half hour before a booking time';
             }
         }
 
         async function reject_booking() {
-            this.innerHTML = 'Processing...';
-            this.disabled = 'disabled';
+            const rejectModalBody = document.getElementById('rejectModalBody');
+
+            rejectModalBody.innerHTML = 'Processing...';
             const body = {
                 id: this.dataset.id
             }
-            const accept_booking_response = await fetchData('booked_booking', 'DELETE', body);
-            if (accept_booking_response.status == 200) {
-                this.innerHTML = 'Success';
-                this.classList.remove('btn-danger');
-                this.classList.add('btn-success');
+            const reject_booking_response = await fetchData('booked_booking', 'DELETE', body);
+            if (reject_booking_response.status == 200) {
+                rejectModalBody.innerHTML = 'Success';
                 setTimeout(function () {
                     log_out();
-                }, 1000);
+                }, 1500);
+            } else {
+                rejectModalBody.innerHTML = 'You cannot Reject you booking before than a half hour before a booking time';
             }
         }
     </script>
