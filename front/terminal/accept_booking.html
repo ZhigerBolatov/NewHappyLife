@@ -65,7 +65,7 @@
     <div class="container" style="margin-top: 36px;">
         <div class="row">
             <div class="col-sm-6" align="left">
-                <button class="btn btn-primary btn-back" onclick="window.location.href='index.html'">
+                <button class="btn btn-primary btn-back" onclick="log_out()">
                     <i class="bi bi-arrow-left"></i> Back
                 </button>
             </div>
@@ -138,72 +138,83 @@
         async function preload() {
             const is_authenticated = await check_authentication();
             if (!is_authenticated) {
-                window.location.href = 'login.html';
+                window.location.href = 'login.html?accept=true';
             }
 
             const booked_booking_response = await fetchData('booked_booking', 'GET', null);
             if (booked_booking_response.status == 200) {
                 const data = booked_booking_response.data;
-                for (let item of data) {
+                if (data.length > 0) {
+                    for (let item of data) {
+                        const row = document.createElement('div');
+                        row.classList.add('row', 'g-5', 'wow', 'fadeInUp', 'border', 'rounded');
+                        row.style.marginTop = '12px';
+                        row.setAttribute('data-wow-delay', `${delay}s`);
+                        delay += 0.3;
+
+                        const header = document.createElement('h2');
+                        header.style.marginTop = "12px";
+                        header.style.marginBottom = "36px";
+                        header.style.fontSize = "300%";
+                        header.align = "center";
+                        const datetime = item.datetime;
+                        header.innerHTML = `${String(datetime.date).padStart(2, "0")}-`;
+                        header.innerHTML += `${String(datetime.month).padStart(2, "0")}-${datetime.year} ${datetime.time}`;
+                        row.appendChild(header);
+
+                        let p = document.createElement('p');
+                        p.classList.add('terminal-card-text');
+                        p.innerHTML = `Doctor: <b>${item.doctor.name} ${item.doctor.surname}</b>`;
+                        row.appendChild(p);
+
+                        p = document.createElement('p');
+                        p.classList.add('terminal-card-text');
+                        p.innerHTML = `Category: <b>${item.doctor.category}</b>`;
+                        row.appendChild(p);
+
+                        const accept_button = document.createElement('button');
+                        accept_button.classList.add('btn', 'btn-primary', 'btn-accept');
+                        accept_button.style.marginTop = "36px";
+                        accept_button.style.marginBottom = "12px";
+                        accept_button.style.marginRight = "auto";
+                        accept_button.style.marginLeft = "auto";
+                        accept_button.style.width = "50%";
+                        accept_button.style.fontSize = "250%";
+                        accept_button.innerHTML = 'Accept Booking';
+                        accept_button.dataset.id = item.id;
+                        accept_button.setAttribute('data-bs-toggle', "modal");
+                        accept_button.setAttribute('data-bs-target', "#acceptModal");
+                        row.appendChild(accept_button);
+                        row.innerHTML += '<p style="margin: 0px;"></p>';
+
+                        const reject_button = document.createElement('button');
+                        reject_button.classList.add('btn', 'btn-danger', 'btn-reject');
+                        reject_button.style.marginTop = "12px";
+                        reject_button.style.marginBottom = "36px";
+                        reject_button.style.marginRight = "auto";
+                        reject_button.style.marginLeft = "auto";
+                        reject_button.style.width = "50%";
+                        reject_button.style.fontSize = "250%";
+                        reject_button.innerHTML = 'Reject Booking';
+                        reject_button.dataset.id = item.id;
+                        reject_button.setAttribute('data-bs-toggle', "modal");
+                        reject_button.setAttribute('data-bs-target', "#rejectModal");
+                        row.appendChild(reject_button);
+
+                        main_container.appendChild(row);
+                    }
+                } else {
                     const row = document.createElement('div');
                     row.classList.add('row', 'g-5', 'wow', 'fadeInUp', 'border', 'rounded');
                     row.style.marginTop = '12px';
                     row.setAttribute('data-wow-delay', `${delay}s`);
                     delay += 0.3;
-
-                    const header = document.createElement('h2');
-                    header.style.marginTop = "12px";
-                    header.style.marginBottom = "36px";
-                    header.style.fontSize = "300%";
-                    header.align = "center";
-                    const datetime = item.datetime;
-                    header.innerHTML = `${String(datetime.date).padStart(2, "0")}-`;
-                    header.innerHTML += `${String(datetime.month).padStart(2, "0")}-${datetime.year} ${datetime.time}`;
-                    row.appendChild(header);
-
-                    let p = document.createElement('p');
-                    p.classList.add('terminal-card-text');
-                    p.innerHTML = `Doctor: <b>${item.doctor.name} ${item.doctor.surname}</b>`;
-                    row.appendChild(p);
-
-                    p = document.createElement('p');
-                    p.classList.add('terminal-card-text');
-                    p.innerHTML = `Category: <b>${item.doctor.category}</b>`;
-                    row.appendChild(p);
-
-                    const accept_button = document.createElement('button');
-                    accept_button.classList.add('btn', 'btn-primary', 'btn-accept');
-                    accept_button.style.marginTop = "36px";
-                    accept_button.style.marginBottom = "12px";
-                    accept_button.style.marginRight = "auto";
-                    accept_button.style.marginLeft = "auto";
-                    accept_button.style.width = "50%";
-                    accept_button.style.fontSize = "250%";
-                    accept_button.innerHTML = 'Accept Booking';
-                    accept_button.dataset.id = item.id;
-                    accept_button.setAttribute('data-bs-toggle', "modal");
-                    accept_button.setAttribute('data-bs-target', "#acceptModal");
-                    row.appendChild(accept_button);
-                    row.innerHTML += '<p style="margin: 0px;"></p>';
-
-                    const reject_button = document.createElement('button');
-                    reject_button.classList.add('btn', 'btn-danger', 'btn-reject');
-                    reject_button.style.marginTop = "12px";
-                    reject_button.style.marginBottom = "36px";
-                    reject_button.style.marginRight = "auto";
-                    reject_button.style.marginLeft = "auto";
-                    reject_button.style.width = "50%";
-                    reject_button.style.fontSize = "250%";
-                    reject_button.innerHTML = 'Reject Booking';
-                    reject_button.dataset.id = item.id;
-                    reject_button.setAttribute('data-bs-toggle', "modal");
-                    reject_button.setAttribute('data-bs-target', "#rejectModal");
-                    row.appendChild(reject_button);
-
+                    row.style.fontSize = "500%";
+                    row.style.marginTop = "64px";
+                    row.style.color = "#0463FA";
+                    row.innerHTML = '<p align="center">No booked appointments for today</p>';
                     main_container.appendChild(row);
                 }
-            } else {
-
             }
 
             let buttons = document.getElementsByClassName('btn-accept');

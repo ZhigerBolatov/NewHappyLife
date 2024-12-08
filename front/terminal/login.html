@@ -150,6 +150,7 @@
         async function login() {
             const urlParams = new URLSearchParams(window.location.search);
             const doctor = urlParams.get('doctor');
+            const accept = urlParams.get('accept');
 
             const login_button = document.getElementById('login_button');
             const iin_input = document.getElementById('iin_input');
@@ -172,6 +173,8 @@
                 setTimeout(function () {
                     if (doctor !== null) {
                         window.location.href = `doctors_detail.html?doctor=${doctor}`;
+                    } else if (accept !== null) {
+                        window.location.href = "accept_booking.html";
                     } else {
                         window.location.href = "index.html";
                     }

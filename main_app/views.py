@@ -684,7 +684,6 @@ class BookedBookingApiView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        request.user.id = 1
         # half_hour = timezone.localtime() + timedelta(minutes=30)
         today = timezone.localtime().date()
         now = timezone.localtime().time()
@@ -725,6 +724,7 @@ class AuthAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
+        # return Response(data={'is_authenticated': True, 'role': 'PT'}, status=status.HTTP_200_OK)
         if request.user and request.user.is_authenticated:
             return Response(data={'is_authenticated': True, 'role': request.user.role}, status=status.HTTP_200_OK)
         return Response(data={'is_authenticated': False, 'role': None}, status=status.HTTP_200_OK)
