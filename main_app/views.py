@@ -715,7 +715,6 @@ class AuthAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        return Response(data={'is_authenticated': True, 'role': 'AD'}, status=status.HTTP_200_OK)
         if request.user and request.user.is_authenticated:
             return Response(data={'is_authenticated': True, 'role': request.user.role}, status=status.HTTP_200_OK)
         return Response(data={'is_authenticated': False, 'role': None}, status=status.HTTP_200_OK)
