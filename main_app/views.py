@@ -707,7 +707,7 @@ class BookedBookingApiView(APIView):
                 return Response(data={'success': False,
                                       'today': timezone.now(),
                                       'booking': booking.datetime,
-                                      'seconds': (timezone.now() - booking.datetime).seconds},
+                                      'seconds': (timezone.now() - booking.datetime).total_seconds()},
                                 status=status.HTTP_400_BAD_REQUEST)
             booking.status = 'Accepted'
             booking.save()
