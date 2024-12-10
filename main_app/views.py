@@ -704,7 +704,11 @@ class BookedBookingApiView(APIView):
         if booking_id is not None:
             booking = get_object_or_404(Booking, id=booking_id)
             if (timezone.localtime() - booking.datetime).seconds > 1800:
-                return Response(data={'success': False}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(data={'success': False,
+                                      'today': timezone.localtime(),
+                                      'booking': booking.datetime,
+                                      'seconds': (timezone.localtime() - booking.datetime).seconds},
+                                status=status.HTTP_400_BAD_REQUEST)
             booking.status = 'Accepted'
             booking.save()
             return Response(data={'success': True}, status=status.HTTP_200_OK)
