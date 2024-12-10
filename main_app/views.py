@@ -47,11 +47,11 @@ class RegistrationApiView(APIView):
 
         category = request.data.get('category')
         mutable_query_dict = dict(request.data.copy())
-        mutable_query_dict.update({'role': ['PT']})
+        mutable_query_dict.update({'role': 'PT'})
         if category is not None:
             mutable_query_dict['category'] = [Category.objects.get(id=category)]
-        for key in mutable_query_dict.keys():
-            mutable_query_dict[key] = mutable_query_dict[key][0]
+        # for key in mutable_query_dict.keys():
+        #     mutable_query_dict[key] = mutable_query_dict[key][0]
         User.objects.create_user(**mutable_query_dict)
 
         return Response(data={'success': True}, status=status.HTTP_200_OK)
